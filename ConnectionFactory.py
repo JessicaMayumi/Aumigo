@@ -6,8 +6,8 @@ class ConnectionFactory():
         try:
             conexao = mysql.connector.connect(
                 host='localhost',
-                user='root',
-                password='root',
+                user='aumigo',
+                password='aumigo',
                 database='AUMIGO',
             )
             return conexao

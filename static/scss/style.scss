@@ -218,8 +218,8 @@ a {
 	border-color: $dark;
 	&:hover {
 		color: $white;
-		background: darken($dark, 5%);
-		border-color: darken($dark, 5%);
+		background: #3d3776;
+		border-color: #3d3776;
 	}
 	&:active, &:focus {
 		outline: none!important;
@@ -229,8 +229,8 @@ a {
 		background: $primary;
 		border-color: $primary;
 		&:hover {
-			background: darken($primary, 5%);
-			border-color: darken($primary, 5%);
+			background: #3d3776;
+			border-color: #3d3776;
 		}
 	}
 	&.btn-secondary {

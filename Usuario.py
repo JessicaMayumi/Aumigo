@@ -1,10 +1,10 @@
 class Usuario():
     def __init__(self, nome, email, senha, verificarUser, usuarioID = None):
-        self.__usuarioID = usuarioID
         self.__email = email
         self.__nome = nome
         self.__senha = senha
         self.__verificarUser = verificarUser
+        self.__usuarioID = usuarioID
   
     @property
     def email(self):
@@ -23,9 +23,13 @@ class Usuario():
         self.__nome = nome 
 
     @property
-    def verificarUser(self):
+    def senha(self):
         return self.__senha
     
+    @senha.setter
+    def senha(self, senha):
+        self.__senha = senha 
+
     @property
     def verificarUser(self):
         return self.__verificarUser
@@ -43,8 +47,7 @@ class Usuario():
         self.usuarioID = usuarioID
 
     def __str__(self): 
-        #arrumar
-        return f"Cpf: {self.__cpf}\nNome: {self.__nome}\nCargo: {self.__cargo}\nSalário: {self.__salario}\nData de Contratação: {str(dataFormatada(self.__dataContratacao))}\nID do Restaurante: {self.__restauranteID}"
+        return f"Nome: {self.__nome}\nEmail: {self.__email}\nID: {self.__usuarioID}"
     
     '''   def imprimirLado(self):
         restaurante = RestauranteDAO().buscaRestaurante(self.__restauranteID)
@@ -54,6 +57,8 @@ class Usuario():
 # converter data pt-BR para SQL
 # data = datetime.strptime('26/08/2018', '%d/%m/%Y').date()
 # print(data)
-# usuario = usuario("a", "b", 12.23, 123, "2006-06-06", 1)
-# usuario = usuario("a", "b", 12.23, 123, "10/10/1991", 1)
+# usuario = Usuario("a", "b", 12.23, 123, "2006-06-06", 1)
+# usuario = Usuario("a", "b", 12.23, 123, "10/10/1991", 1)
 # print(usuario)
+
+
