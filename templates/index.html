@@ -1,0 +1,394 @@
+{% extends "template.html" %}
+
+{% block titulo %} AUMIGO {% endblock %}
+
+{% block mainTitulo %}
+{% endblock %}
+
+{% block css%}
+<style>
+
+.roxo {
+    color: #3d3776;
+}
+
+</style>
+{% endblock %}
+
+{% block main %}
+<!-- Start Hero Section -->
+<div class="hero">
+    <div class="container">
+        <div class="row justify-content-between">
+            <div class="col-lg-5">
+                <div class="intro-excerpt">
+                    <h1>ADOTE UM COMPANHEIRO <span clsas="d-block"></span></h1>
+                    <p class="mb-4">Ajude um animal de estimação a encontrar um lar, e você terá um amigo para a vida toda!</p>
+                    <p><a href="animais" class="btn btn-secondary me-2" >Explorar</a></p>
+                </div>
+            </div>
+            <div class="col-lg-7">
+                <div class="hero-img-wrap">
+                    <img src="../static/images/img6.png" class="img-fluid">
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- End Hero Section -->
+
+<!-- Start Product Section -->
+<div class="product-section">
+<div class="container">
+    <div class="row">
+
+        <!-- Start Column 1 -->
+        <div class="col-md-12 col-lg-3 mb-5 mb-lg-0">
+            <h2 class="mb-4 section-title">Alguns Aumigos</h2>
+            <p class="mb-4">Para visualizar mais aumigos na fila clique em *Explorar*</p>
+            <p><a href="animais" class="btn" style="color: #3d3776; border: solid 1px #3d3776;">Explorar</a></p>
+        </div> 
+        <!-- End Column 1 -->
+
+        <!-- Start Column 2 -->
+        <div class="col-12 col-md-4 col-lg-3 mb-5 mb-md-0">
+            <a class="product-item" href="favoritos">
+                <img src="../static/images/img2.jpg" class="img-fluid product-thumbnail">
+                <h3 class="product-title">Cachorro 1</h3>
+                <strong class="product-price">Desc</strong>
+
+                <span class="icon-cross">
+                    <img src="../static/images/cross.svg" class="img-fluid">
+                </span>
+            </a>
+        </div> 
+        <!-- End Column 2 -->
+
+        <!-- Start Column 3 -->
+        <div class="col-12 col-md-4 col-lg-3 mb-5 mb-md-0">
+            <a class="product-item" href="favoritos">
+                <img src="../static/images/img2.jpg" class="img-fluid product-thumbnail">
+                <h3 class="product-title">Cachorro 2</h3>
+                <strong class="product-price">Desc</strong>
+
+                <span class="icon-cross">
+                    <img src="../static/images/cross.svg" class="img-fluid">
+                </span>
+            </a>
+        </div>
+        <!-- End Column 3 -->
+
+        <!-- Start Column 4 -->
+        <div class="col-12 col-md-4 col-lg-3 mb-5 mb-md-0">
+            <a class="product-item" href="favorito">
+                <img src="../static/images/img2.jpg" class="img-fluid product-thumbnail">
+                <h3 class="product-title">Cachorro 3</h3>
+                <strong class="product-price">Desc</strong>
+
+                <span class="icon-cross">
+                    <img src="../static/images/cross.svg" class="img-fluid">
+                </span>
+            </a>
+        </div>
+        <!-- End Column 4 -->
+
+    </div>
+</div>
+</div>
+<!-- End Product Section -->
+
+<!-- Start Why Choose Us Section -->
+<div class="why-choose-section">
+<div class="container">
+    <div class="row justify-content-between">
+        <div class="col-lg-6">
+            <h2 class="section-title">Institucional</h2>
+            <p>Nos dedicamos a transformar vidas de animais abandonados, oferecendo a eles um lar amoroso e seguro. Trabalhamos incansavelmente para resgatar, cuidar e reabilitar esses animais, preparando-os para uma nova chance de felicidade. Nossa missão é encontrar famílias que possam proporcionar o carinho e a atenção que cada um deles merece.</p>
+
+            <div class="row my-5">
+                <div class="col-6 col-md-6">
+                    <div class="feature">
+                        <div class="icon">
+                            <img src="../static/images/truck.svg" alt="Image" class="imf-fluid">
+                        </div>
+                        <h3>Adote um Amigo</h3>
+                        <p>Encontre seu novo companheiro entre nossos animais prontos para adoção.</p>
+                    </div>
+                </div>
+
+                <div class="col-6 col-md-6">
+                    <div class="feature">
+                        <div class="icon">
+                            <img src="../static/images/bag.svg" alt="Image" class="imf-fluid">
+                        </div>
+                        <h3>Compromisso com o Bem-Estar</h3>
+                        <p>Oferecemos suporte contínuo para garantir uma transição tranquila para seu novo amigo.</p>
+                    </div>
+                </div>
+
+                <div class="col-6 col-md-6">
+                    <div class="feature">
+                        <div class="icon">
+                            <img src="../static/images/support.svg" alt="Image" class="imf-fluid">
+                        </div>
+                        <h3>Voluntariado e Apoio</h3>
+                        <p>Ajude a fazer a diferença com sua participação como voluntário ou doador</p>
+                    </div>
+                </div>
+
+                <div class="col-6 col-md-6">
+                    <div class="feature">
+                        <div class="icon">
+                            <img src="../static/images/return.svg" alt="Image" class="imf-fluid">
+                        </div>
+                        <h3>Contato</h3>
+                        <p>Entre em contato conosco para mais informações sobre adoção e como contribuir.</p>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <div class="col-lg-5">
+            <div class="img-wrap">
+                <img src="../static/images/img3.jpg" alt="Image" class="img-fluid">
+            </div>
+        </div>
+
+    </div>
+</div>
+</div>
+<!-- End Why Choose Us Section -->
+
+<!-- Start We Help Section -->
+<div class="we-help-section">
+<div class="container">
+    <div class="row justify-content-between">
+        <div class="col-lg-7 mb-5 mb-lg-0">
+            <div class="imgs-grid">
+                <div class="grid grid-1"><img src="../static/images/img-grid-1.jpg" alt="Untree.co"></div>
+                <div class="grid grid-2"><img src="../static/images/img-grid-2.jpg" alt="Untree.co"></div>
+                <div class="grid grid-3"><img src="../static/images/img-grid-3.jpg" alt="Untree.co"></div>
+            </div>
+        </div>
+        <div class="col-lg-5 ps-lg-5">
+            <h2 class="section-title mb-4">Conectamos Animais a Lares Amorosos</h2>
+            <p>Nossa missão é criar novas oportunidades para animais em situação de vulnerabilidade, conectando-os a lares cheios de carinho e dedicação. <b>Nosso trabalho vai além do resgate:</b></p>
+
+            <ul class="list-unstyled custom-list my-4">
+                <li>Resgate e Reabilitação</li>
+                <li>Adoção Responsável</li>
+                <li>Educação e Suporte</li>
+                <li>Engajamento Comunitário</li>
+            </ul>
+            <p><a herf="#" class="btn" style="color: #3d3776; border: solid 1px #3d3776;">Explore</a></p>
+        </div>
+    </div>
+</div>
+</div>
+<!-- End We Help Section -->
+
+<!-- Start Popular Product -->
+<div class="popular-product">
+<div class="container">
+    <div class="row">
+
+        <div class="col-12 col-md-6 col-lg-4 mb-4 mb-lg-0">
+            <div class="product-item-sm d-flex">
+                <div class="thumbnail">
+                    <img src="../static/images/product-1.png" alt="Image" class="img-fluid">
+                </div>
+                <div class="pt-3">
+                    <h3>Programa de Foster e Reabilitação</h3>
+                    <p>Oferecemos acolhimento temporário e cuidados especializados</p>
+                    <p><a href="#" >Saiba mais</a></p>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-12 col-md-6 col-lg-4 mb-4 mb-lg-0">
+            <div class="product-item-sm d-flex">
+                <div class="thumbnail">
+                    <img src="../static/images/product-2.png" alt="Image" class="img-fluid">
+                </div>
+                <div class="pt-3">
+                    <h3>Parcerias e Colaborações</h3>
+                    <p>Colaboramos com profissionais e organizações locais </p>
+                    <p><a href="#">Saiba mais</a></p>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-12 col-md-6 col-lg-4 mb-4 mb-lg-0">
+            <div class="product-item-sm d-flex">
+                <div class="thumbnail">
+                    <img src="../static/images/product-3.png" alt="Image" class="img-fluid">
+                </div>
+                <div class="pt-3">
+                    <h3>Campanhas de Conscientização e Educação</h3>
+                    <p>Educamos a comunidade sobre adoção responsável </p>
+                    <p><a href="#">Saiba mais</a></p>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+</div>
+<!-- End Popular Product -->
+
+<!-- Start Testimonial Slider -->
+<div class="testimonial-section">
+<div class="container">
+    <div class="row">
+        <div class="col-lg-7 mx-auto text-center">
+            <h2 class="section-title">Comentários</h2>
+        </div>
+    </div>
+
+    <div class="row justify-content-center">
+        <div class="col-lg-12">
+            <div class="testimonial-slider-wrap text-center">
+
+                <div id="testimonial-nav">
+                    <span class="prev" data-controls="prev"><span class="fa fa-chevron-left"></span></span>
+                    <span class="next" data-controls="next"><span class="fa fa-chevron-right"></span></span>
+                </div>
+
+                <div class="testimonial-slider">
+                    
+                    <div class="item">
+                        <div class="row justify-content-center">
+                            <div class="col-lg-8 mx-auto">
+
+                                <div class="testimonial-block text-center">
+                                    <blockquote class="mb-5">
+                                        <p>&ldquo;Donec facilisis quam ut purus rutrum lobortis. Donec vitae odio quis nisl dapibus malesuada. Nullam ac aliquet velit. Aliquam vulputate velit imperdiet dolor tempor tristique. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Integer convallis volutpat dui quis scelerisque.&rdquo;</p>
+                                    </blockquote>
+
+                                    <div class="author-info">
+                                        <div class="author-pic">
+                                            <img src="../static/images/person-1.png" alt="Maria Jones" class="img-fluid">
+                                        </div>
+                                        <h3 class="font-weight-bold">Maria Jones</h3>
+                                        <span class="position d-block mb-3">CEO, Co-Founder, XYZ Inc.</span>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div> 
+                    <!-- END item -->
+
+                    <div class="item">
+                        <div class="row justify-content-center">
+                            <div class="col-lg-8 mx-auto">
+
+                                <div class="testimonial-block text-center">
+                                    <blockquote class="mb-5">
+                                        <p>&ldquo;Donec facilisis quam ut purus rutrum lobortis. Donec vitae odio quis nisl dapibus malesuada. Nullam ac aliquet velit. Aliquam vulputate velit imperdiet dolor tempor tristique. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Integer convallis volutpat dui quis scelerisque.&rdquo;</p>
+                                    </blockquote>
+
+                                    <div class="author-info">
+                                        <div class="author-pic">
+                                            <img src="../static/images/person-1.png" alt="Maria Jones" class="img-fluid">
+                                        </div>
+                                        <h3 class="font-weight-bold">Maria Jones</h3>
+                                        <span class="position d-block mb-3">CEO, Co-Founder, XYZ Inc.</span>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div> 
+                    <!-- END item -->
+
+                    <div class="item">
+                        <div class="row justify-content-center">
+                            <div class="col-lg-8 mx-auto">
+
+                                <div class="testimonial-block text-center">
+                                    <blockquote class="mb-5">
+                                        <p>&ldquo;Donec facilisis quam ut purus rutrum lobortis. Donec vitae odio quis nisl dapibus malesuada. Nullam ac aliquet velit. Aliquam vulputate velit imperdiet dolor tempor tristique. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Integer convallis volutpat dui quis scelerisque.&rdquo;</p>
+                                    </blockquote>
+
+                                    <div class="author-info">
+                                        <div class="author-pic">
+                                            <img src="../static/images/person-1.png" alt="Maria Jones" class="img-fluid">
+                                        </div>
+                                        <h3 class="font-weight-bold">Maria Jones</h3>
+                                        <span class="position d-block mb-3">CEO, Co-Founder, XYZ Inc.</span>
+                                    </div>
+                                </div>
+
+                            </div>
+                        </div>
+                    </div> 
+                    <!-- END item -->
+
+                </div>
+
+            </div>
+        </div>
+    </div>
+</div>
+</div>
+<!-- End Testimonial Slider -->
+
+<!-- Start Blog Section -->
+<div class="blog-section">
+<div class="container">
+    <div class="row mb-5">
+        <div class="col-md-6">
+            <h2 class="section-title">Recentes</h2>
+        </div>
+        <div class="col-md-6 text-start text-md-end">
+            <a href="#" class="more roxo">Visualizar tudo</a>
+        </div>
+    </div>
+
+    <div class="row">
+
+        <div class="col-12 col-sm-6 col-md-4 mb-4 mb-md-0">
+            <div class="post-entry">
+                <a href="#" class="post-thumbnail"><img src="../static/images/img1.png" alt="Image" class="img-fluid"></a>
+                <div class="post-content-entry">
+                    <h3><a href="#" class="roxo">Post 1 - ABCABCABC</a></h3>
+                    <div class="meta">
+                        <span>escrito por <a href="#" class="roxo">Kristin Watson</a></span> <span>em Dec 19, 2021</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-12 col-sm-6 col-md-4 mb-4 mb-md-0">
+            <div class="post-entry">
+                <a href="#" class="post-thumbnail"><img src="../static/images/img1.png" alt="Image" class="img-fluid"></a>
+                <div class="post-content-entry">
+                    <h3><a href="#" class="roxo">Post 2 - ABCABCABC</a></h3>
+                    <div class="meta">
+                        <span>escrito por <a href="#" class="roxo">Robert Fox</a></span> <span>em Dec 15, 2021</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="col-12 col-sm-6 col-md-4 mb-4 mb-md-0">
+            <div class="post-entry">
+                <a href="#" class="post-thumbnail"><img src="../static/images/img1.png" alt="Image" class="img-fluid"></a>
+                <div class="post-content-entry">
+                    <h3><a href="#" class="roxo">Post 3 - ABCABCABC</a></h3>
+                    <div class="meta">
+                        <span>escrito por <a href="#" class="roxo">Kristin Watson</a></span> <span>em Dec 12, 2021</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+</div>
+</div>
+
+<!-- End Blog Section -->	
+
+{% endblock %}
