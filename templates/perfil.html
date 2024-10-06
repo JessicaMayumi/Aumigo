@@ -20,7 +20,37 @@
     .mensagem-erro {
         background-color: #dc3545; /* Vermelho para erro */
     }
+
+    #imageLabel {
+      display: inline-block;
+  }
+
+    .li-animais {
+      border: solid black 3px; 
+      border-radius: 30px; 
+      height: 300px; 
+      width: 300px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .ul-animais {
+      display: grid;
+      grid-template-columns: 50px 50px 50px 50px;
+      grid-template-rows: auto;
+      align-self: center;
+      gap: 10px 10px;
+      justify-items: center;
+      align-items: center;
+      justify-content: space-around; 
+      background-color: red;
+    }
+
+
 </style>
+<link href="static/css/perfil.css" rel="stylesheet"> 
 {% endblock %}
 
 
@@ -33,7 +63,7 @@ dados aqui
 {% block main %}
 {% with mensagens = get_flashed_messages(with_categories=True) %}
 {% if mensagens %}
-    <div id="container-mensagem">
+    <div id="container-mensagem">   
         {% for categoria, mensagem in mensagens %}
             <div class="mensagem mensagem-{{ categoria }}">
                 {{ mensagem }}
@@ -56,45 +86,154 @@ dados aqui
     </script>
 {% endif %}
 {% endwith %}
-<h1>Perfil</h1>
+<!--link do template: https://www.creative-tim.com/bits/bootstrap/user-profile-page-argon-dashboard-->
 
-    <form action="{{ url_for('perfil') }}" method="POST" enctype="multipart/form-data">
-        <div>
-            <label for="foto">Foto de Perfil:</label>
-            <input type="file" id="foto" name="foto" accept="image/*">
-            {% if usuario.foto %}
-                <img src="{{ url_for('static', filename=usuario.foto) }}" alt="Foto de Perfil" width="150">
-            {% endif %}
+<div>
+  <form action="{{ url_for('perfil') }}" method="POST" enctype="multipart/form-data">
+  <button type="submit" class="btn btn-sm btn-primary">Atualizar Perfil</button>
+  <div class="card-body">
+    <form>
+      <h6 class="heading-small text-muted mb-4">Informações de Perfil</h6>
+      <div class="pl-lg-4">
+        <div class="row">
+          <div class="col-lg-6">
+            <div class="form-group focused">
+              <label class="form-control-label" for="input-username">Nome</label>
+              <input type="text" id="input-username" name="nome" class="form-control form-control-alternative" placeholder="Nome" value="{{usuario.nome}}">
+            </div>
+          </div>
+          <div class="col-lg-6">
+            <div class="form-group">
+              <label class="form-control-label" for="input-email">Email</label>
+              <input type="email" id="input-email" name="email" class="form-control form-control-alternative" placeholder="Email" value="{{usuario.email.lower()}}">
+            </div>
+          </div>
         </div>
-
-        <div>
-            <label for="nome">Nome:</label>
-            <input type="text" id="nome" name="nome" value="{{ usuario.nome }}" required>
+      </div>
+      <hr class="my-4">
+      <!-- Description -->
+      <h6 class="heading-small text-muted mb-4">Sobre mim</h6>
+      <div class="pl-lg-4">
+        <div class="form-group focused">
+          <label>Sobre mim</label>
+          <textarea rows="4" name="desc" class="form-control form-control-alternative" placeholder="A few words about you ...">{{usuario.desc}}</textarea>
         </div>
+      </div>
+  
+</div>
+<!--<div>
+  <label for="foto">Foto de Perfil:</label>
+  <input type="file" id="foto" name="foto" accept="image/*">
+  {% if usuario.foto %}
+      <img src="{{ url_for('static', filename=usuario.foto) }}" alt="Foto de Perfil" width="150">
+  {% endif %}
+</div>-->
 
+<div class="card card-profile shadow">
+  <div class="row justify-content-center">
+    <div class="col-lg-3 order-lg-2">
+      <div class="card-profile-image">
+        {% if usuario.imgPerfil %}
+        <!--<input type="file" name="foto">-->
+        <input type="file" id="fileInput" accept="image/*" style="display: none;" name="imgPerfil">
+        <label for="fileInput" id="imageLabel">
+            <img id="imageDisplay" alt="Imagem carregada aparecerá aqui." style="width: 150px; cursor: pointer;">
+        </label>
+    {% endif %}
+      </div>
+    </div>
+  </div>
+
+<div class="card-body pt-0 pt-md-4">
+  <div class="row">
+    <div class="col">
+      <div class="card-profile-stats d-flex justify-content-center mt-md-5">
         <div>
-            <label for="email">Email:</label>
-            <input type="email" id="email" name="email" value="{{ usuario.email }}" required>
+          <span class="heading">22</span>
+          <span class="description">Friends</span>
         </div>
-
         <div>
-            <label for="descricao">Descrição:</label>
-            <textarea id="descricao" name="descricao" rows="4">{{ usuario.descricao }}</textarea>
+          <span class="heading">10</span>
+          <span class="description">Photos</span>
         </div>
+        <div>
+          <span class="heading">89</span>
+          <span class="description">Comments</span>
+        </div>
+      </div>
+    </div>
+  </div>
+  <div class="text-center">
+    <h3>
+      Jessica Jones<span class="font-weight-light">, 27</span>
+    </h3>
+    <div class="h5 font-weight-300">
+      <i class="ni location_pin mr-2"></i>Bucharest, Romania
+    </div>
+    <div class="h5 mt-4">
+      <i class="ni business_briefcase-24 mr-2"></i>Solution Manager - Creative Tim Officer
+    </div>
+    <div>
+      <i class="ni education_hat mr-2"></i>University of Computer Science
+    </div>
+    <hr class="my-4">
+    <p>Ryan — the name taken by Melbourne-raised, Brooklyn-based Nick Murphy — writes, performs and records all of his own music.</p>
+  </div>
+</div>
+</div>
+</div>
 
-        <button type="submit">Atualizar Perfil</button>
-    </form>
+<!--
 
-    <h2>Animais Adicionados</h2>
-    <ul>
-        {% for animal in animais %}
-            <li>
-                <strong>{{ animal.nome }}</strong> - {{ animal.descricao }}
-                <form action="{{ url_for('deletar_animal', animal_id=animal.id) }}" method="POST" style="display:inline;">
-                    <button type="submit">Deletar</button>
-                </form>
-            </li>
-        {% endfor %}
-    </ul>
+<div class="perfil-container">
+  Exibe a imagem atual do perfil (ou uma padrão)
+  <img id="img-preview" src="static/images/person_1.jpg" alt="Imagem de Perfil">
+  
+  Input de arquivo oculto sobre a imagem 
+  <input type="file" name="imgPerfil" accept="image/*" onchange="previewImagem(event)">
+</div>
+
+-->
+
+
+<script>
+  const fileInput = document.getElementById('fileInput');
+  const imageDisplay = document.getElementById('imageDisplay');
+
+  // Imagem padrão que você deseja mostrar inicialmente
+  imageDisplay.src = 'static/images/person_1.jpg';
+
+  fileInput.addEventListener('change', function() {
+      const file = fileInput.files[0];
+      const reader = new FileReader();
+
+      reader.onload = function(e) {
+          imageDisplay.src = e.target.result;
+      };
+
+      if (file) {
+          reader.readAsDataURL(file);
+      }
+  });
+</script>
+
+
+
+<h2>Animais Adicionados</h2>
+<br>
+<a href="{{ url_for('addAnimal') }}">Adicionar Animal</a>
+<ul class="ul-animais">
+    {% for animal in animais %}
+        <li class="li-animais">
+            <div style="height: 200px; width: 200px;">
+              Foto
+            </div>
+            <strong>{{ animal.nome }}</strong> - {{ animal.desc }}
+            <form action="{{ url_for('deletar_animal', animal_id=animal.animalID) }}" method="POST" style="display:inline;">
+                <button type="submit">Deletar</button>
+            </form>
+        </li>
+    {% endfor %}
+</ul>
 
 {% endblock %}

@@ -1,5 +1,5 @@
 class Animal():
-    def __init__(self, nome, tipo, raca, genero, nasc, desc, status, animalID = None):
+    def __init__(self, nome, tipo, raca, genero, nasc, desc, status, foto, animalID = None):
         self.__nome = nome
         self.__tipo = tipo
         self.__raca = raca
@@ -7,6 +7,7 @@ class Animal():
         self.__nasc = nasc
         self.__desc = desc
         self.__status = status
+        self.__foto = foto
         self.__animalID = animalID
   
     @property
@@ -64,6 +65,14 @@ class Animal():
     @status.setter
     def status(self, status):
         self.__status = status
+
+    @property
+    def foto(self):
+        return self.__foto
+    
+    @foto.setter
+    def foto(self, foto):
+        self.__foto = foto
 
     @property
     def animalID(self):

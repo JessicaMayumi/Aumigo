@@ -1,11 +1,14 @@
-from flask import Flask, render_template, request, redirect, flash , jsonify, make_response 
+from flask import Flask, render_template, request, redirect, flash , jsonify, make_response, url_for
 from Usuario import *
 from UsuarioDAO import *
+from Animal import *
+from AnimalDAO import *
 import secrets
 import requests
 import os
 from requests.auth import HTTPDigestAuth
 from datetime import timedelta
+from flask import session
 
 app = Flask(__name__)
 
@@ -17,6 +20,7 @@ def index():
 
 @app.route("/inicio")
 def inicio():
+    return render_template("index.html")
 
 @app.route("/blog")
 def blog():
@@ -40,8 +44,8 @@ def login():
 
 @app.route("/verificar")
 def verificar():
-    email = request.args.get("email-login").upper()
-    password = str(request.args.get("password-login")).upper()
+    email = request.args.get("email-login").lower()
+    password = str(request.args.get("password-login"))
     
     #Mensagens de depuração
     print(f"Email: {email}")
@@ -53,15 +57,21 @@ def verificar():
     
     usuario = usuarioDAO.buscaUsuario(email, password)
     
-    if usuario is None:
+    if usuario == None:
         flash("Email ou Senha inválido!", "erro")
         return render_template("login.html")  
     else:
+        session['email'] = usuario.email
+        print(f"Usuário encontrado: {usuario.nome}, Tipo: {usuario.verificarUser}, Img: {usuario.imgPerfil}")
         if usuario.verificarUser == 'N':
             flash("Login realizado com sucesso!", "sucesso")
             #https://www.hashtagtreinamentos.com/usar-cookies-com-python
             flash("Login realizado com sucesso!", "sucesso")
-            resp = make_response(render_template("perfil.html", usuario=usuario))
+            animais = animalDAO.buscaAnimaisPorUsuario(usuario.email)
+            print(f"\033[0;32mAnimais encontrados: {animais}\033[0;0m")
+            if not animais:
+                print("Nenhum animal encontrado para este usuário.")
+            resp = make_response(render_template("perfil.html", usuario=usuario, animais=animais))
             resp.set_cookie('user', usuario.email, max_age=31536000)  # Cookie válido por 1 ano
             return resp
         elif usuario.verificarUser == 'A':
@@ -77,7 +87,7 @@ def verificar():
 def cadastro():
     email = request.args.get("email")
     password = request.args.get("password")
-    usuario = Usuario(nome="May", email=email.upper(), senha=password, verificarUser="N")
+    usuario = Usuario(nome="May", email=email.upper(), senha=password, verificarUser="N") #, imgPerfil="static/images/person-1.png", desc=""
     if usuarioDAO.insereUsuario(usuario):
         print(f"\033[32m\033[1mO Usuario {usuario.nome.upper()} foi adicionado com sucesso!\033[0;0m")
         return render_template("index.html")
@@ -92,20 +102,59 @@ def animais():
 def form():
     return render_template("form.html")
 
-@app.route("/addAnimal")
+@app.route("/addAnimal", methods=["GET", "POST"])
 def addAnimal():
+
+    if request.method == "POST":
+        nome = request.form.get("nome")
+        tipo = request.form.get("tipo")
+        raca = request.form.get("raca")
+        genero = request.form.get("genero")
+        nasc = request.form.get("nasc")
+        desc = request.form.get("desc")
+        status = request.form.get("status")
+        foto = request.form.get("foto")
+
+        if not nome or not tipo or not raca:
+            flash("Por favor, preencha todos os campos obrigatórios.", "erro")
+            return redirect(url_for("/addAnimal"))
+        
+        animalDAO = AnimalDAO()
+        animal = Animal(nome, tipo, raca, genero, nasc, desc, status, foto=None)
+        
+        userEmail = session.get('email')
+        if not userEmail:
+            flash("Erro: Usuário não autenticado.", "erro")
+            return redirect(url_for("/login"))
+        
+        if animalDAO.insereAnimal(animal, userEmail):
+            flash("Animal Adicionado com Sucesso!", "sucesso")
+            return redirect(url_for("/perfil"))
+        else:
+            flash("Erro ao adicionar Animal", "erro")
+            return redirect("/addAnimal")
+    
     return render_template("addAnimal.html")
+
 
 @app.route("/perfil", methods=["GET", "POST"])
 def perfil():
+    userEmail = session.get('email')  # Recupera o email da sessão
+    if not userEmail:
+        flash("Erro: Usuário não autenticado.", "erro")
+        return redirect("/login")
+
     # Obtém o cookie do usuário
     user_cookie = request.cookies.get('user') or request.cookies.get('admin')
-    
+    print("62622612561612111.")
     if not user_cookie:
         flash("Nenhum cookie ativo encontrado. Por favor, faça login novamente.", "erro")
         return redirect("/login")
     
+    usuarioDAO = UsuarioDAO()
+    animalDAO = AnimalDAO()
     usuario = usuarioDAO.buscaUsuarioPorEmail(user_cookie)
+    print(f"Usuário encontrado: {usuario}")
     
     if not usuario:
         flash("Usuário não encontrado. Por favor, faça login novamente.", "erro")
@@ -113,24 +162,31 @@ def perfil():
     
     if request.method == "POST":
         nome = request.form.get("nome")
-        email = request.form.get("email").upper()
-        descricao = request.form.get("descricao")
-        foto = request.files.get("foto")
+        email = request.form.get("email")
+        desc = request.form.get("desc")
+        imgPerfil = request.files.get("imgPerfil")
 
-        if foto:
-            foto_path = os.path.join('static/uploads/', foto.filename)
-            foto.save(foto_path)
-            usuario.foto = foto_path
+        # Verifica se o nome não é None antes de usar .lower()
+        nome = nome.lower() if nome else usuario.nome.lower()
+        # Verifica se o email não é None antes de usar .upper()
+        email = email.upper() if email else usuario.email.upper()
 
+#        if imgPerfil:
+#            # Armazena a foto no GridFS
+#            img_id = usuario.salvaImagem(imgPerfil)  #-----------------------------
+#            usuario.imgPerfil = img_id  # Armazena o ID do GridFS no usuário
 
         usuario.nome = nome
-        usuario.descricao = descricao
+        usuario.desc = desc
         
         # Verifica se o email foi alterado
         email_alterado = usuario.email != email
         usuario.email = email
 
-        usuarioDAO.alteraUsuario(usuario)
+        if not usuarioDAO.alteraUsuario(usuario):
+            flash("Erro ao atualizar o perfil.", "erro")
+            return redirect(url_for("/perfil"))
+        
         flash("Perfil atualizado com sucesso!", "sucesso")
 
         resp = make_response(redirect("/perfil"))
@@ -143,12 +199,26 @@ def perfil():
                 resp.set_cookie("admin", usuario.email, max_age=60*60)  # Cookie de 1 hora
         
         return resp
+    
+    animais = animalDAO.buscaAnimaisPorUsuario(usuario.email)
+    print(f"\033[0;32mAnimais encontrados: {animais}\033[0;0m")
+    if not animais:
+        print("Nenhum animal encontrado para este usuário.")
 
-    # Obtém a lista de animais do usuário
-    #animais = usuarioDAO.buscaAnimaisPorUsuario(usuario.email)
+    return render_template("perfil.html", usuario=usuario, animais=animais)
 
-    return render_template("perfil.html", usuario=usuario) #, animais=animais
-
+    
+@app.route('/imagem/<img_id>')
+def serve_imagem(img_id):
+    try:
+        grid_out = usuarioDAO.fs.get(ObjectId(img_id))
+        response = make_response(grid_out.read())
+        response.headers['Content-Type'] = grid_out.content_type
+        print(f"Imagem servida com ID: {img_id}")
+        return response
+    except Exception as e:
+        print(f"Erro ao carregar a imagem: {e}")
+        return 'Erro ao carregar a imagem', 500
 
 @app.route("/deletar_animal/<animal_id>", methods=["POST"])
 def deletar_animal(animal_id):
