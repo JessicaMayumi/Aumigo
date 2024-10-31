@@ -1,12 +1,13 @@
 class Animal():
-    def __init__(self, nome, tipo, raca, genero, idade, desc, status, animalID = None):
+    def __init__(self, nome, tipo, raca, genero, nasc, desc, status, foto, animalID = None):
         self.__nome = nome
         self.__tipo = tipo
         self.__raca = raca
         self.__genero = genero
-        self.__idade = idade
+        self.__nasc = nasc
         self.__desc = desc
         self.__status = status
+        self.__foto = foto
         self.__animalID = animalID
   
     @property
@@ -42,12 +43,12 @@ class Animal():
         self.__genero = genero
 
     @property
-    def idade(self):
-        return self.__idade
+    def nasc(self):
+        return self.__nasc
     
-    @idade.setter
-    def idade(self, idade):
-        self.__idade = idade
+    @nasc.setter
+    def nasc(self, nasc):
+        self.__nasc = nasc
 
     @property
     def desc(self):
@@ -66,6 +67,14 @@ class Animal():
         self.__status = status
 
     @property
+    def foto(self):
+        return self.__foto
+    
+    @foto.setter
+    def foto(self, foto):
+        self.__foto = foto
+
+    @property
     def animalID(self):
         return self.__animalID
     
@@ -74,4 +83,4 @@ class Animal():
         self.animalID = animalID
 
     def __str__(self): 
-        return f"Nome: {self.__nome}\nTipo de Animal: {self.__tipo}\nRaça: {self.__raca}\nGênero: {self.__genero}\nIdade: {self.__idade}\nDescrição: {self.__desc}\nStatus: {self.__status}\nID: {self.__animalID}"
+        return f"Nome: {self.__nome}\nTipo de Animal: {self.__tipo}\nRaça: {self.__raca}\nGênero: {self.__genero}\nnasc: {self.__nasc}\nDescrição: {self.__desc}\nStatus: {self.__status}\nID: {self.__animalID}"

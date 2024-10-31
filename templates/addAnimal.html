@@ -1,0 +1,153 @@
+{% extends "template.html" %}
+
+{% block css%}
+<style>
+    .mensagem {
+        position: fixed;
+        top: 20px;
+        left: 50%;
+        transform: translateX(-50%);
+        padding: 10px;
+        border-radius: 5px;
+        color: #fff;
+        font-size: 14px;
+        z-index: 1000;
+        display: none;
+    }
+    .mensagem-sucesso {
+        background-color: #28a745; /* Verde para sucesso */
+    }
+    .mensagem-erro {
+        background-color: #dc3545; /* Vermelho para erro */
+    }
+</style>
+<link href="static/css/perfil.css" rel="stylesheet"> 
+{% endblock %}
+
+
+{% block titulo %} AUMIGO - BLOG {% endblock %}
+
+{% block mainTitulo %}
+fav
+{% endblock %}
+
+{% with mensagens = get_flashed_messages(with_categories=True) %}
+{% if mensagens %}
+    <div id="container-mensagem">   
+        {% for categoria, mensagem in mensagens %}
+            <div class="mensagem mensagem-{{ categoria }}">
+                {{ mensagem }}
+            </div>
+        {% endfor %}
+    </div>
+    <script>
+        document.addEventListener("DOMContentLoaded", function() {
+            var mensagens = document.querySelectorAll(".mensagem");
+            mensagens.forEach(function(mensagem) {
+                mensagem.style.display = "block";
+                setTimeout(function() {
+                    mensagem.style.opacity = 0;
+                    setTimeout(function() {
+                        mensagem.style.display = "none";
+                    }, 500); // Tempo de transição
+                }, 3000); // Tempo em que a mensagem ficará visível
+            });
+        });
+    </script>
+{% endif %}
+{% endwith %}
+
+{% block main %}
+<!-- Start Hero Section -->
+        <div class="hero">
+            <div class="container">
+                <div class="row justify-content-between">
+                    <div class="col-lg-5">
+                        <div class="intro-excerpt">
+                            <h1>Adicionar Animal</h1>
+                        </div>
+                    </div>
+            
+                    <div class="col-lg-7">
+                        <div>
+
+                           
+                            
+                          </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    <!-- End Hero Section -->
+    <form action="{{ url_for('addAnimal') }}" method="POST" enctype="multipart/form-data">
+        <button type="submit" class="btn btn-sm btn-primary">Adicionar Pet</button>
+        <div class="card-body">
+          <form>
+            <h6 class="heading-small text-muted mb-4">Informações do Animal</h6>
+            <div class="pl-lg-4">
+              <div class="row">
+                <div class="col-lg-6">
+                  <div class="form-group focused">
+                    <label class="form-control-label" for="input-username">Nome</label>
+                    <input type="text" id="input-username" name="nome" class="form-control form-control-alternative" placeholder="Nome" value="Nome" required>
+                  </div>
+                </div>
+                <div class="col-lg-6">
+                  <div class="form-group">
+                    <label class="form-control-label" for="tipo">Tipo</label> <!--select-->
+                    <select name="tipo" id="tipo" class="form-control form-control-alternative" required>
+                        <option value="cachorro">Cachorro</option>
+                        <option value="gato">Gato</option>
+                        <option value="coelho">Coelho</option>
+                        <option value="outros">Outros</option>
+                        </select>
+                  </div>
+                </div>
+                <div class="col-lg-6">
+                    <div class="form-group">
+                      <label class="form-control-label" for="raca">Raça</label> 
+                      <input type="text" id="raca" name="raca" class="form-control form-control-alternative" placeholder="Raça" value="Raça" required>
+                    </div>
+                </div>
+                <div class="col-lg-6">
+                    <div class="form-group">
+                      <label class="form-control-label" for="genero">Gênero</label> <!--select-->
+                        <select name="genero" id="genero" class="form-control form-control-alternative" required>
+                        <option value="F">Fêmea</option>
+                        <option value="M">Macho</option>
+                        <option value="N/A">Não Identificado</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="col-lg-6">
+                    <div class="form-group">
+                      <label class="form-control-label" for="nasc">Data de Nascimento</label>
+                      <input type="date" id="nasc" name="nasc" class="form-control form-control-alternative">
+                    </div>
+                </div>
+                <div class="col-lg-6">
+                    <div class="form-group">
+                    <label class="form-control-label" >Status</label>
+                        <div class="form-control form-control-alternative" style="display: flex; flex-direction: row; gap: 30px;">
+                            <div><input type="radio" name="status" id="ativado" value="Ativado">
+                                <label for="ativado">Ativado</label></div>
+                            <div>
+                                <input type="radio" name="status" id="desativado" value="Desativado">
+                                <label for="desativado">Desativado</label><br>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+              </div>
+            </div>
+            <hr class="my-4">
+            <!-- Description -->
+            <h6 class="heading-small text-muted mb-4">Descrição</h6>
+            <div class="pl-lg-4">
+              <div class="form-group focused">
+                <label>Descrição</label>
+                <textarea rows="4" id="desc" name="desc" class="form-control form-control-alternative" placeholder="Sobre o Animal..."></textarea>
+              </div>
+            </div>
+    <br><br><br><br><br><br><br><br><br><br>
+{% endblock %}

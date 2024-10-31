@@ -1,95 +1,190 @@
-import mysql.connector
 from Animal import *
 from ConnectionFactory import *
 from time import sleep
+from UsuarioDAO import *
+from Usuario import *
 
+from pymongo import MongoClient
+from bson.objectid import ObjectId
 
 class AnimalDAO:
-    conexao = ConnectionFactory().getConexao()
-    def buscaAnimal(self, id):
+    def __init__(self):
+        # Conectar ao MongoDB
+        self.collection = db["Animais"]
+
+    def buscaAnimal(self, animalID):
         try:
-            cursor = self.conexao.cursor()
-            ### Necessário usar o SQL em maiusculo pq o UBUNTU é case sensitive e sempre o SQL maisuculo no DAO também
-            sql = 'SELECT * FROM ANIMAL WHERE ID_ANIMAL = %s' 
-            ##necessário id, para identificar como tupla senão não lê do banco
-            cursor.execute(sql, (id,))
-            dados = cursor.fetchone()
+            query = {"animalID": animalID}
+            dados = self.collection.find_one(query)
             if dados:
-                #(self, nome, tipo, raca, genero, idade, desc, status, animalID = None):
-                return Animal(nome=dados[1], tipo=dados[2], raca=dados[3],genero=dados[4],idade=dados[5],desc=dados[6], status=dados[7] ,animalID= dados[0] )
+                return Animal(
+                    nome=dados.get("nome"),
+                    tipo=dados.get("tipo"),
+                    raca=dados.get("raca"),
+                    genero=dados.get("genero"),
+                    nasc=dados.get("nasc"),
+                    desc=dados.get("desc"),
+                    status=dados.get("status"),
+                    foto = dados.get("foto"),
+                    animalID=str(dados.get("_id"))
+                )
             else:
                 return None
         except Exception as err:
-            print (f"Erro ao buscar animal: {err}")
+            print(f"Erro ao buscar animal: {err}")
 
-    def buscaAnimais(self):
+    def buscaAnimais(self, parametro):
         try:
-            cursor = self.conexao.cursor()
-            ### Necessário usar o SQL em maiusculo pq o UBUNTU é case sensitive e sempre o SQL maisuculo no DAO também
-            sql = 'SELECT * FROM ANIMAL'
-            cursor.execute(sql)
-            dados = cursor.fetchall()
+            # Converte cada ID da lista para ObjectId *NAO ENTENDI*
+            object_ids = []
+            for animal_id in parametro:
+                object_ids.append(ObjectId(animal_id))
+            
+            # Faz a busca no banco de dados usando os ObjectId *NAO ENTENDI*
+            query = {"_id": {"$in": object_ids}}
+            dados = self.collection.find(query)
             animais = []
-            for i in dados:
-                animal = Animal(nome=dados[1], tipo=dados[2], raca=dados[3],genero=dados[4],idade=dados[5],desc=dados[6], status=dados[7] ,animalID= dados[0] )
+            for dado in dados:
+                animal = Animal(
+                    nome=dado.get("nome"),
+                    tipo=dado.get("tipo"),
+                    raca=dado.get("raca"),
+                    genero=dado.get("genero"),
+                    nasc=dado.get("nasc"),
+                    desc=dado.get("desc"),
+                    status=dado.get("status"),
+                    foto = dado.get("foto"),
+                    animalID=str(dado.get("_id"))
+                )
                 animais.append(animal)
             return animais
         except Exception as err:
-            print(f"Erro ao buscar animal: {err}")
+            print(f"Erro ao buscar animais: {err}")
 
-    def insereAnimal(self, animal):
+    def buscaAnimaisPorUsuario(self, email):    
         try:
-            cursor = self.conexao.cursor()
-            ### Necessário usar o SQL em maiusculo pq o UBUNTU é case sensitive e sempre o SQL maisuculo no DAO também
-            #(nome=dados[1], tipo=dados[2], raca=dados[3],genero=dados[4],idade=dados[5],desc=dados[6], status=dados[7] ,animalID= dados[0] )
-            sql = 'INSERT INTO ANIMAL (NOME, TIPO, RACA, GENERO, IDADE, DESCRICAO, STATUSANIMAL) VALUES (%s, %s, %s, %s,%s, %s, %s)'
-            cursor.execute(sql, (str(animal.nome), str(animal.tipo), str(animal.raca), int(animal.genero), int(animal.idade), str(animal.desc), str(animal.status)),)
-            self.conexao.commit()
-            return True
+            usuario = usuarioDAO.buscaUsuarioPorEmail(email)
+            print("Usuário encontrado:", usuario)
+
+            if usuario:
+                print("Animais do usuário:", usuario.animais)  # Para verificar a lista de animais
+                if usuario.animais:  # Verifica se a lista de animais não está vazia
+                    animalIDs = usuario.animais
+                    print(f"IDs dos animais: {animalIDs}")
+                    return self.buscaAnimais(animalIDs)
+                else:
+                    print(f"Usuário não tem animais associados.")
+                    return []
+            else:
+                print("Usuário não encontrado.")
+                return []
+        except Exception as err:
+            print(f"Erro ao buscar animais do usuário: {err}")
+            return []
+        
+    def adicionaAnimalAoUsuario(self, usuario_email, animal_id):
+        try:
+            result = self.collection.update_one(
+                {"email": usuario_email},
+                {"$addToSet": {"animais": animal_id}}
+            )
+            
+            if result.modified_count > 0:
+                print(f"Animal {animal_id} adicionado ao usuário {usuario_email}.")
+            else:
+                print(f"Falha ao adicionar animal ao usuário {usuario_email}.")
+        except Exception as err:
+            print(f"Erro ao associar animal ao usuário: {err}")
+
+    def insereAnimal(self, animal, email):
+        try:
+            # Inserindo o animal na coleção de animais
+            dados = {
+                "nome": animal.nome,
+                "tipo": animal.tipo,
+                "raca": animal.raca,
+                "genero": animal.genero,
+                "nasc": animal.nasc,
+                "desc": animal.desc,
+                "status": animal.status,
+                "foto" : animal.foto
+            }
+            result = self.collection.insert_one(dados)
+            animal_id = result.inserted_id
+            
+            if animal_id:
+                usuarioDAO = UsuarioDAO()
+                usuario = usuarioDAO.buscaUsuarioPorEmail(email)
+                
+                if usuario:
+                    usuario.animais.append(str(animal_id))
+                    
+                    if usuarioDAO.alteraUsuario(usuario):
+                        print(f"Animal {animal_id} adicionado ao usuário {email}.")
+                        return True
+                    else:
+                        print(f"Erro ao atualizar o usuário {email}.")
+                        return False
+                else:
+                    print(f"Usuário {email} não encontrado.")
+                    return False
+            else:
+                return False
         except Exception as err:
             print(f"Erro ao inserir animal: {err}")
+            return False
 
     def alteraAnimal(self, animal):
         try:
-            cursor = self.conexao.cursor()
-            sql = 'UPDATE ANIMAL SET NOME = %s, TIPO = %s, GENERO = %s, IDADE = %s, DESCRICAO = %s, STATUSANIMAL = %s WHERE ID_ANIMAL = %s'
-            cursor.execute(sql, (animal.nome.upper(), animal.tipo, animal.genero, animal.idade, animal.desc, animal.status, int(animal.animalID),))
-            self.conexao.commit()
-            return True
+            query = {"_id": ObjectId(animal.animalID)}
+            novos_dados = {
+                "$set": {
+                    "nome": animal.nome,
+                    "tipo": animal.tipo,
+                    "raca": animal.raca,
+                    "genero": animal.genero,
+                    "nasc": animal.nasc,
+                    "desc": animal.desc,
+                    "status": animal.status,
+                    "foto" : animal.foto
+                }
+            }
+            result = self.collection.update_one(query, novos_dados)
+            return result.modified_count > 0
         except Exception as err:
             print(f"Erro ao alterar animal: {err}")
 
     def apagarAnimal(self, animal):
         try:
-            cursor = self.conexao.cursor()
-            ### Necessário usar o SQL em maiusculo pq o UBUNTU é case sensitive e sempre o SQL maisuculo no DAO também
-            sql = 'DELETE FROM ANIMAL WHERE ID_ANIMAL = %s'
-            ##necessário id, para identificar como tupla senão não lê do banco
-            cursor.execute(sql, (animal.animalID,))
-            self.conexao.commit()
-            return True
+            query = {"animalID": animal.animalID}
+            result = self.collection.delete_one(query)
+            return result.deleted_count > 0
         except Exception as err:
-            print(f"Erro ao apagar animal: {err}")
-            
+            print(f"Erro ao apagar usanimal: {err}")
 
-#teste BD Inserir (Funcionando)
+# Exemplo de uso
 
-'''
+'''animalDAO = AnimalDAO()
+
+print(animalDAO.buscaAnimais())
+for a in animalDAO.buscaAnimais():
+    print(a.nome)'''
+
+
 animalDAO = AnimalDAO()
 
-#(self, nome, tipo, raca, genero, idade, desc, status, animalID = None):
-nome = "May"
-tipo = "a"
-raca = "b"
-genero = 1
-idade = 2
-desc = "aaaa"
-status = "c"
 
-animal = Animal(nome.upper(), tipo, raca, genero, idade, desc, status)
-print (animal)
-print(animal.tipo)
+# Teste
+'''novo_animal = Animal("a", "b", "c", "d", "e", "f", "g", foto=None)
+if animalDAO.insereAnimal(novo_animal):
+    print("foi")'''
+'''email = "BBBB@GMAIL.COM"
+usuario = usuarioDAO.buscaUsuarioPorEmail(email)
+print(f"Usuário encontrado: {usuario}, Animais: {usuario.animais}")'''
 
-if animalDAO.insereAnimal(animal):
-    print(f"\033[32m\033[1mO Usuario {animal.nome.upper()} foi adicionado com sucesso!\033[0;0m")
+
+'''usuario_test = Usuario("Nome", "email@example.com", "senha123", True, "img.jpg", "Descrição", ["animal1", "animal2"])
+print("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa")
+print(usuario_test.animais)  # Deve imprimir a lista de animais
+#   ESTÁ FUNCIONANDO!
 '''

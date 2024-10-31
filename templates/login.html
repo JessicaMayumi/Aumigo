@@ -15,6 +15,40 @@
     svg:hover path{
       fill: #7c78d0;
     }
+
+    .popup-overlay {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.5);
+            z-index: 1000;
+        }
+        .popup-content {
+            position: fixed;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            background: #fff;
+            padding: 20px;
+            border-radius: 5px;
+            z-index: 1001;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.3);
+        }
+        .popup-content button {
+            background: #007bff;
+            color: #fff;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 5px;
+            cursor: pointer;
+        }
+        .popup-content button.close {
+            background: #dc3545;
+        }
+
   </style>
 </head>
 <body>
@@ -33,8 +67,32 @@
         <label for="signup" class="slide signup">Cadastro</label>
         <div class="slider-tab"></div>
       </div>
+      
       <div class="form-inner">
-        <form action="login" class="login">
+        
+        {% with mensagens = get_flashed_messages(with_categories=True) %}
+        {% if mensagens %}
+            <div id="popup-overlay" class="popup-overlay">
+                <div class="popup-content">
+                    {% for categoria, mensagem in mensagens %}
+                        <p class="{{ categoria }}">{{ mensagem }}</p>
+                    {% endfor %}
+                    <button onclick="fecharPopup()">Fechar</button>
+                </div>
+            </div>
+            <script>
+                document.addEventListener("DOMContentLoaded", function() {
+                    document.getElementById('popup-overlay').style.display = 'block';
+                });
+    
+                function fecharPopup() {
+                    document.getElementById('popup-overlay').style.display = 'none';
+                }
+            </script>
+        {% endif %}
+    {% endwith %}
+
+        <form action="/verificar" class="login">
           <div class="field">
             <input type="text" name="email-login" placeholder="Email" required>
           </div>
@@ -48,7 +106,7 @@
           </div>
           <div class="signup-link">Não tem Cadastro? <a href="">Cadastrar Agora</a></div>
         </form>
-        <form action="cadastro" class="signup">
+        <form action="/cadastro" class="signup">
           <div class="field">
             <input type="text" name="email" placeholder="Email" required>
           </div>
