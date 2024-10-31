@@ -1,0 +1,85 @@
+{% extends "template.html" %}
+
+{% block titulo %} AUMIGO - ANIMAIS {% endblock %}
+
+{% block css %}
+<style>
+    .li-animais {
+        border: solid black 3px; 
+        border-radius: 30px; 
+        height: 300px; 
+        width: 300px;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        background-color: gray;
+    }
+
+    .ul-animais {
+        display: grid;
+        grid-template-columns: 300px 300px;
+        position: relative;
+        place-items: center;
+        top: 160px;
+        margin-bottom: 250px;
+        margin: 0px 150px 250px 150px;
+        align-self: center;
+        gap: 50px 50px;
+        justify-items: center;
+        align-items: center;
+        justify-content: space-around;
+    }
+</style>
+{% endblock %}
+
+{% block mainTitulo %}
+{% endblock %}
+
+{% block main %}
+		<!-- Start Hero Section -->
+        <div class="hero">
+            <div class="container">
+                <div class="row justify-content-between">
+                    <div class="col-lg-5">
+                        <div class="intro-excerpt">
+                            <h1>{{tipo}}</h1>
+                            <p class="mb-4">Bem-vindo ao nosso blog! Aqui você encontrará artigos, dicas e novidades sobre Pets. Fique à vontade para explorar e deixar seus comentários – sua opinião é muito importante para nós!</p>
+                            <!--<p><a href="" class="btn btn-secondary me-2">Shop Now</a><a href="#" class="btn btn-white-outline">Explore</a></p>-->
+                        </div>
+                    </div>
+                    <div class="col-lg-7">
+                        <div class="hero-img-wrap">
+                            <img src="{{ url_for('static', filename = 'images/couch.png') }}" class="img-fluid">
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    <!-- End Hero Section -->
+
+    
+
+    <!-- Start Animal Section -->
+
+    <div class="backToHome">
+        <a href="{{ url_for('animais') }}">
+            <svg xmlns="http://www.w3.org/2000/svg" width="2em" height="2em" viewBox="0 0 24 24">
+                <path fill="#7c78d0" d="M12 9.059V6.5a1.001 1.001 0 0 0-1.707-.708L4 12l6.293 6.207a.997.997 0 0 0 1.414 0A.999.999 0 0 0 12 17.5v-2.489c2.75.068 5.755.566 8 3.989v-1c0-4.633-3.5-8.443-8-8.941"/>
+            </svg>
+        </a>
+    </div>
+    
+
+    <ul class="ul-animais ">
+        {% for animal in animais %}
+            <li class="li-animais">
+                <a href="{{ url_for('animais', tipo=animal.tipo , nome=animal.nome) }}">
+                <div style="height: 200px; width: 200px;">
+                Foto
+                </div>
+                <strong>{{ animal.nome }}</strong> - {{ animal.tipo }}</a>
+            </li>
+        {% endfor %}
+    </ul>
+{% endblock %}

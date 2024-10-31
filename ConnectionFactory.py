@@ -1,21 +1,20 @@
-import mysql.connector
+from pymongo import MongoClient
+import gridfs
 
-class ConnectionFactory():
-    def getConexao(self):
-        ##Estabelece e retorna uma conexão com o banco de dados MySQL.
-        try:
-            conexao = mysql.connector.connect(
-                host='localhost',
-                user='aumigo',
-                password='aumigo',
-                database='AUMIGO',
-            )
-            return conexao
-        except Exception as err:
-            # Tratar o erro de conexão aqui, seja levantando uma exceção personalizada ou registrando o erro
-            print(f"Erro ao conectar ao banco de dados: {err}")
+# Substitua a string abaixo com a sua string de conexão
+client = MongoClient("mongodb+srv://AUMIGO:MAY@aumigo.ziyhr.mongodb.net/?authMechanism=SCRAM-SHA-1&ssl=true")
 
-    def fechar_conexao(self, conexao):
-        ##Fecha a conexão com o banco de dados.
-        if conexao.is_connected():
-            conexao.close()
+# Acessando o banco de dados
+db = client["AUMIGO"]
+
+# Acessando uma coleção
+#collection = db["Usuarios"]
+
+'''
+# Exemplo de inserção de documento na coleção
+collection.insert_one({"name": "John", "age": 30})
+
+# Exemplo de leitura de documentos da coleção
+for document in collection.find():
+    print(document)
+'''

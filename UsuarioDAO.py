@@ -1,102 +1,289 @@
-import mysql.connector
 from Usuario import *
 from ConnectionFactory import *
 from time import sleep
+from bson.objectid import ObjectId
+from bson.binary import Binary
 
+from pymongo import MongoClient
+from bson.objectid import ObjectId
 
 class UsuarioDAO:
-    conexao = ConnectionFactory().getConexao()
-    def buscaUsuario(self, email):
-        try:
-            cursor = self.conexao.cursor()
-            ### Necessário usar o SQL em maiusculo pq o UBUNTU é case sensitive e sempre o SQL maisuculo no DAO também
-            sql = 'SELECT * FROM USUARIO WHERE EMAIL = %s' 
-            ##necessário id, para identificar como tupla senão não lê do banco
-            cursor.execute(sql, (email,))
-            dados = cursor.fetchone()
-            if dados:
-                #(self, nome, email, senha, verificarUser, usuarioID = None)
-                return Usuario(nome=dados[1], email=dados[2], senha=dados[3],verificarUser=dados[4],usuarioID= dados[0]  )
-            else:
-                return None
-        except Exception as err:
-            print (f"Erro ao buscar usuário: {err}")
+    def __init__(self):
+        # Conectar ao MongoDB
+        self.collection = db["Usuarios"]
+        self.fs = gridfs.GridFS(db)
 
-    def buscaUsuarios(self):
+    def buscaUsuario(self, email, senha):
         try:
-            cursor = self.conexao.cursor()
-            ### Necessário usar o SQL em maiusculo pq o UBUNTU é case sensitive e sempre o SQL maisuculo no DAO também
-            sql = 'SELECT * FROM USUARIO'
-            cursor.execute(sql)
-            dados = cursor.fetchall()
-            usuarios = []
-            for i in dados:
-                usuario = Usuario(nome=dados[1], email=dados[2], senha=dados[3],verificarUser=dados[4],usuarioID= dados[0]  )
-                usuarios.append(usuario)
-            return usuarios
+            query = {"email": email.upper(), "senha": senha}
+            dados = self.collection.find_one(query)
+            if dados:
+                return Usuario(
+                    nome=dados.get("nome"),
+                    email=dados.get("email"),
+                    senha=dados.get("senha"),
+                    verificarUser=dados.get("verificarUser"),
+                    imgPerfil=dados.get("imgPerfil"),
+                    desc=dados.get("desc"),
+                    animais=dados.get("animais", []),
+                    usuarioID=str(dados.get("_id"))
+                )
+            else:
+                print("Usuário não encontrado.")
+                return None
         except Exception as err:
             print(f"Erro ao buscar usuário: {err}")
 
+    def buscaUsuarioPorEmail(self, email):
+        try:
+            query = {"email": email.upper()}
+            dados = self.collection.find_one(query)
+            if dados:
+                animais=dados.get("animais", [])
+                print("Lista de animais:", animais)
+
+                return Usuario(
+                    nome=dados.get("nome"),
+                    email=dados.get("email"),
+                    senha=dados.get("senha"),
+                    verificarUser=dados.get("verificarUser"),
+                    imgPerfil=dados.get("imgPerfil"),
+                    desc=dados.get("desc"),
+                    animais=animais,
+                    usuarioID=dados.get("_id")
+                )
+            else:
+                return None
+        except Exception as err:
+            print(f"Erro ao buscar usuário: {err}")
+
+    def buscaUsuarios(self):
+        try:
+            dados = self.collection.find()
+            usuarios = []
+            for dado in dados:
+                usuario = Usuario(
+                    nome=dado.get("nome"),
+                    email=dado.get("email"),
+                    senha=dado.get("senha"),
+                    verificarUser=dado.get("verificarUser"),
+                    imgPerfil=dado.get("imgPerfil"),
+                    desc=dado.get("desc"),
+                    animais=dado.get("animais", []),
+                    usuarioID=str(dado.get("_id"))
+                )
+                usuarios.append(usuario)
+            return usuarios
+        except Exception as err:
+            print(f"Erro ao buscar usuários: {err}")
+            return [] 
+
+
     def insereUsuario(self, usuario):
         try:
-            cursor = self.conexao.cursor()
-            ### Necessário usar o SQL em maiusculo pq o UBUNTU é case sensitive e sempre o SQL maisuculo no DAO também
-            #(self, nome, email, senha, verificarUser, usuarioID = None)
-            sql = 'INSERT INTO USUARIO (NOME, EMAIL, SENHA, VERIFICARUSER) VALUES (%s, %s, %s, %s)'
-            cursor.execute(sql, (str(usuario.nome), str(usuario.email), str(usuario.senha), str(usuario.verificarUser)),)
-            self.conexao.commit()
-            return True
+            # Carrega a imagem padrão em bytes e armazena no GridFS, se não houver imagem personalizada
+            img_id = None
+            with open("static/images/person-1.jpg", 'rb') as f:  # caminho para a imagem padrão
+                img_data = f.read()
+                img_id = self.fs.put(img_data, filename="person-1.jpg")
+
+            dados = {
+                "nome": usuario.nome,
+                "email": usuario.email,
+                "senha": usuario.senha,
+                "verificarUser": usuario.verificarUser,
+                "imgPerfil": img_id,  # Armazena o ID do GridFS em vez do caminho
+                "desc": usuario.desc,
+                "animais": usuario.animais
+            }
+            result = self.collection.insert_one(dados)
+            return result.inserted_id is not None
         except Exception as err:
             print(f"Erro ao inserir usuário: {err}")
+            return False
+
 
     def alteraUsuario(self, usuario):
         try:
-            cursor = self.conexao.cursor()
-            sql = 'UPDATE USUARIO SET NOME = %s, EMAIL = %s,  SENHA = %s, VERIFICARUSER = %s WHERE ID_USUARIO = %s'
-            cursor.execute(sql, (usuario.nome.upper(), usuario.email, usuario.senha, usuario.verificarUser, int(usuario.usuarioID),))
-            self.conexao.commit()
-            return True
+            # Define a consulta pelo ID do usuário
+            query = {"_id": ObjectId(usuario.usuarioID)}
+            print(f"\nIniciando atualização do usuário com ID: {usuario.usuarioID}")
+
+            # Obtém o documento atual do usuário
+            current_user = self.collection.find_one(query)
+            if not current_user:
+                print(f"Erro: Usuário com ID {usuario.usuarioID} não encontrado no banco de dados.")
+                return False
+
+            print(f"Dados atuais do usuário: {current_user}")
+
+            # Define a nova imagem de perfil
+            img_id_str = usuario.imgPerfil if usuario.imgPerfil else current_user.get('imgPerfil')
+            if img_id_str:
+                print("Usando nova imagem de perfil fornecida." if usuario.imgPerfil else "Mantendo a imagem de perfil existente.")
+            else:
+                print("Nenhuma imagem de perfil fornecida.")
+
+            # Dados a serem atualizados
+            novos_dados = {
+                "$set": {
+                    "nome": usuario.nome.lower(),
+                    "email": usuario.email,
+                    "senha": usuario.senha,
+                    "verificarUser": usuario.verificarUser,
+                    "imgPerfil": img_id_str,
+                    "desc": usuario.desc,
+                    "animais": usuario.animais
+                }
+            }
+            print(f"Novos dados para atualização: {novos_dados}")
+
+            # Realiza a atualização no banco de dados
+            result = self.collection.update_one(query, novos_dados)
+            print(f"Documentos modificados: {result.modified_count}")
+
+            # Verifica o documento atualizado para garantir que a imagem foi alterada
+            updated_user = self.collection.find_one(query)
+            print(f"\nDocumento atualizado: {updated_user}")
+
+            if result.modified_count > 0:
+                print("Atualização realizada com sucesso.")
+            else:
+                print("Nenhuma modificação foi realizada no banco de dados.")
+
+            return result.modified_count > 0
         except Exception as err:
-            print(f"Erro ao alterar usuario: {err}")
+            print(f"Erro ao alterar usuário: {err}")
+            return False
+
 
     def apagarUsuario(self, usuario):
         try:
-            cursor = self.conexao.cursor()
-            ### Necessário usar o SQL em maiusculo pq o UBUNTU é case sensitive e sempre o SQL maisuculo no DAO também
-            sql = 'DELETE FROM USUARIO WHERE EMAIL = %s'
-            ##necessário id, para identificar como tupla senão não lê do banco
-            cursor.execute(sql, (usuario.email,))
-            self.conexao.commit()
-            return True
+            query = {"email": usuario.email}
+            result = self.collection.delete_one(query)
+            return result.deleted_count > 0
         except Exception as err:
             print(f"Erro ao apagar usuário: {err}")
-            
+
+    def adicionarAnimalAoUsuario(self, usuarioID, animalID):
+        try:
+            query = {"_id": ObjectId(usuarioID)}
+            novo_animal = {"$push": {"animais": animalID}}
+            result = self.collection.update_one(query, novo_animal)
+            return result.modified_count > 0
+        except Exception as err:
+            print(f"Erro ao adicionar animal ao usuário: {err}")
+            return False
+
+
+
+# Exemplo de uso
+
 usuarioDAO = UsuarioDAO()
-#teste BD 
+
+'''
+# Teste
+novo_usuario = Usuario(nome="May", email="may@example.com", senha="123456", verificarUser=True)
+usuarioDAO.insereUsuario(novo_usuario)
+
+
+
+usuario = usuarioDAO.buscaUsuario("star@gmail.com".upper(), "123")
+if usuario:
+    print(f"Usuário encontrado: {usuario.nome}, Tipo: {usuario.verificarUser}")
+else:
+    print("Usuário não encontrado ou senha incorreta")
 
 '''
 
+"""
 
+print(usuarioDAO.buscaUsuarios())
+for user in usuarioDAO.buscaUsuarios():
+    print(user.email)
+    print(user.senha)
 
-nome = "Lia"
-email = "uwu.jessyca@gmail.com"
-senha = "145"
-verificarUser = "N"
-usuario = Usuario(nome.upper(), email.upper(), senha, verificarUser)
+novo_usuario = Usuario(nome="May", email="may@example.com", senha="123456", verificarUser="N", imgPerfil="static/images/person-1.png", desc= "aaaa")
+if usuarioDAO.insereUsuario(novo_usuario):
+    print("Usuário inserido com sucesso")
+"""
+usuarios = usuarioDAO.buscaUsuarios()
+for user in usuarios:
+    print(f"Email: {user.email}, Senha: {user.senha}")
 
-if usuarioDAO.insereUsuario(usuario): #Inserir Funcionando
-    print(f"\033[32m\033[1mO Usuario {usuario.nome.upper()} foi adicionado com sucesso!\033[0;0m")
+"""usuario = usuarioDAO.buscaUsuario("may@example.com", "123456")
+if usuario:
+    print(f"Usuário encontrado: {usuario.nome}, Tipo: {usuario.verificarUser}, Img: {usuario.imgPerfil}, Senha: {usuario.senha}")
+else:
+    print("Usuário não encontrado ou senha incorreta")
 
-#if usuarioDAO.apagarUsuario(usuario): #Apagar Funcionando
-#    print(f"\033[32m\033[1mO Usuario {usuario.nome.upper()} foi apagado com sucesso!\033[0;0m")
+usuarioDAO.alteraUsuario(usuario)"""
 
-#if usuarioDAO.alteraUsuario(usuario):  #Alterar ERRO
-#    print(f"\033[32m\033[1mO Usuario {usuario.nome.upper()} foi adicionado com sucesso!\033[0;0m")
+"""novo_usuario = Usuario(
+    nome="May", 
+    email="may@example.com", 
+    senha="123456", 
+    verificarUser="N", 
+    imgPerfil="static/images/person-1.png", 
+    desc="aaaa"
+)
 
-#if usuarioDAO.buscaUsuario(usuario.email):  #Listar Usuário ERRO
-#    print(f"\033[32m\033[1mO Usuario {usuario.nome.upper()} foi adicionado com sucesso!\033[0;0m")
- 
-#for item in usuarioDAO.buscaUsuarios(): #Listar Usuários ERRO
-#    print(item)
+if usuarioDAO.insereUsuario(novo_usuario):
+    print("Usuário inserido com sucesso")
+else:
+    print("Falha ao inserir usuário")"""
+
+email = "BBBB@GMAIL.COM"
+senha = "123"
+
+usuario = usuarioDAO.buscaUsuario(email, senha)
+if usuario:
+    print(f"Usuário encontrado: {usuario.nome}, Tipo: {usuario.verificarUser}, Img: {usuario.imgPerfil}")
+else:
+    print("Usuário não encontrado ou senha incorreta")
 
 '''
+
+usuarioID = "66e2f6cb960573d1adf9aaaa"
+animalID = "66f1859c2ca923f5e745da5e"
+
+if usuarioDAO.adicionarAnimalAoUsuario(usuarioID, animalID):
+    print("Animal adicionado ao usuário com sucesso!")
+else:
+    print("Erro ao adicionar animal ao usuário.")'''
+
+
+usuario = usuarioDAO.buscaUsuarioPorEmail(email)
+if usuario:
+    print(f"Usuário encontrado: {usuario.nome}, Tipo: {usuario.verificarUser}, Img: {usuario.imgPerfil}")
+
+
+
+"""   def insereUsuario(self, usuario):
+        try:
+            # Verifica se o usuário enviou uma imagem; se não, usa uma imagem padrão
+            if usuario.imgPerfil:
+                if isinstance(usuario.imgPerfil, str):
+                    with open(usuario.imgPerfil, 'rb') as f:
+                        img_data = f.read()
+                    img_id = self.fs.put(img_data, filename=usuario.imgPerfil)
+                    img_id_str = str(img_id)
+                else:
+                    img_id_str = None
+            else:
+                img_id_str = "static/images/person-1.jpg"
+            
+            dados = {
+                "nome": usuario.nome,
+                "email": usuario.email,
+                "senha": usuario.senha,
+                "verificarUser": usuario.verificarUser,
+                "imgPerfil": img_id_str,  # Usa a imagem padrão ou a personalizada
+                "desc": usuario.desc,
+                "animais": usuario.animais
+            }
+            result = self.collection.insert_one(dados)
+            return result.inserted_id is not None
+        except Exception as err:
+            print(f"Erro ao inserir usuário: {err}")"""
+
