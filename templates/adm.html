@@ -7,74 +7,120 @@
         top: 20px;
         left: 50%;
         transform: translateX(-50%);
-        padding: 10px;
+        padding: 15px;
         border-radius: 5px;
         color: #fff;
-        font-size: 14px;
+        font-size: 16px;
         z-index: 1000;
         display: none;
+        transition: opacity 0.5s ease-in-out;
     }
     .mensagem-sucesso {
-        background-color: #28a745; /* Verde para sucesso */
+        background-color: #28a745;
     }
     .mensagem-erro {
-        background-color: #dc3545; /* Vermelho para erro */
+        background-color: #dc3545;
+    }
+
+    table {
+        width: 80%;
+        margin: 20px auto;
+        border-collapse: collapse;
+    }
+
+    th, td {
+        padding: 12px;
+        text-align: center;
+        border-bottom: 1px solid #ddd;
+    }
+
+    th {
+        background-color: #f8f9fa;
+    }
+
+    tr:hover {
+        background-color: #f1f1f1;
+    }
+
+    .btn {
+        padding: 8px 12px;
+        margin: 5px;
+        border-radius: 5px;
+        cursor: pointer;
+    }
+
+    .btn-editar {
+        background-color: #28a745;
+        color: #fff;
+    }
+
+    .btn-excluir {
+        background-color: #dc3545;
+        color: #fff;
     }
 </style>
 {% endblock %}
 
-
-{% block titulo %} ADM {% endblock %}
+{% block titulo %} Painel de Administração {% endblock %}
 
 {% block main %}
 {% with mensagens = get_flashed_messages(with_categories=True) %}
-{% if mensagens %}
-    <div id="container-mensagem">
-        {% for categoria, mensagem in mensagens %}
-            <div class="mensagem mensagem-{{ categoria }}">
-                {{ mensagem }}
-            </div>
-        {% endfor %}
-    </div>
-    <script>
-        document.addEventListener("DOMContentLoaded", function() {
-            var mensagens = document.querySelectorAll(".mensagem");
-            mensagens.forEach(function(mensagem) {
-                mensagem.style.display = "block";
-                setTimeout(function() {
-                    mensagem.style.opacity = 0;
+    {% if mensagens %}
+        <div id="container-mensagem">
+            {% for categoria, mensagem in mensagens %}
+                <div class="mensagem mensagem-{{ categoria }}">
+                    {{ mensagem }}
+                </div>
+            {% endfor %}
+        </div>
+        <script>
+            document.addEventListener("DOMContentLoaded", function() {
+                var mensagens = document.querySelectorAll(".mensagem");
+                mensagens.forEach(function(mensagem) {
+                    mensagem.style.display = "block";
                     setTimeout(function() {
-                        mensagem.style.display = "none";
-                    }, 500); // Tempo de transição
-                }, 3000); // Tempo em que a mensagem ficará visível
+                        mensagem.style.opacity = 0;
+                        setTimeout(function() {
+                            mensagem.style.display = "none";
+                        }, 500);
+                    }, 3000);
+                });
             });
-        });
-    </script>
-{% endif %}
-{% endwith %}
-    {% if administrador == "N" %}
-        Você não tem permissão para acessar esta página
-    {% elif administrador == "A" %}
-        <h2>Lista de Usuários</h2>
-        <table>
-            <thead>
-                <tr>
-                    <th>Nome</th>
-                    <th>Email</th>
-                    <th>Senha</th>
-                    <th>Verificar User</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% for item in usuarios %}
-                    <tr>
-                        <td>{{ item.nome }}</td>
-                        <td>{{ item.email }}</td>
-                        <td>{{ item.senha }}</td>
-                        <td>{{ item.verificarUser }}</td>
-                    </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+        </script>
     {% endif %}
+{% endwith %}
+
+{% if administrador == "N" %}
+    <div class="alert alert-danger">
+        Você não tem permissão para acessar esta página.
+    </div>
+{% elif administrador == "A" %}
+    <h2 style="text-align: center;">Lista de Usuários</h2>
+    <table class="table table-striped">
+        <thead>
+            <tr>
+                <th>Nome</th>
+                <th>Email</th>
+                <th>Senha</th>
+                <th>Status</th>
+                <th>Ações</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for item in usuarios %}
+                <tr>
+                    <td>{{ item.nome }}</td>
+                    <td>{{ item.email }}</td>
+                    <td>{{ item.senha }}</td>
+                    <td>{{ item.verificarUser }}</td>
+                    <td>
+                        <a href="#" class="btn btn-editar">Editar</a>
+                        <a href="#" class="btn btn-excluir">Excluir</a>
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <br><br><br><br><br>
+{% endif %}
 {% endblock %}

@@ -78,9 +78,5 @@ class Animal():
     def animalID(self):
         return self.__animalID
     
-    @animalID.setter
-    def usuarioID(self,animalID):
-        self.animalID = animalID
-
     def __str__(self): 
         return f"Nome: {self.__nome}\nTipo de Animal: {self.__tipo}\nRaça: {self.__raca}\nGênero: {self.__genero}\nnasc: {self.__nasc}\nDescrição: {self.__desc}\nStatus: {self.__status}\nID: {self.__animalID}"

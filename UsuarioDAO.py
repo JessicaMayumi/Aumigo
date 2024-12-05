@@ -11,6 +11,8 @@ class UsuarioDAO:
     def __init__(self):
         # Conectar ao MongoDB
         self.collection = db["Usuarios"]
+        self.collection_animais = db["Animais"]
+        self.collection_posts = db["Posts"]
         self.fs = gridfs.GridFS(db)
 
     def buscaUsuario(self, email, senha):
@@ -26,6 +28,29 @@ class UsuarioDAO:
                     imgPerfil=dados.get("imgPerfil"),
                     desc=dados.get("desc"),
                     animais=dados.get("animais", []),
+                    posts=dados.get("posts", []),
+                    usuarioID=str(dados.get("_id"))
+                )
+            else:
+                print("Usuário não encontrado.")
+                return None
+        except Exception as err:
+            print(f"Erro ao buscar usuário: {err}")
+    
+    def buscaUsuarioPorID(self, id):
+        try:
+            query = {"_id": ObjectId(id)}
+            dados = self.collection.find_one(query)
+            if dados:
+                return Usuario(
+                    nome=dados.get("nome"),
+                    email=dados.get("email"),
+                    senha=dados.get("senha"),
+                    verificarUser=dados.get("verificarUser"),
+                    imgPerfil=dados.get("imgPerfil"),
+                    desc=dados.get("desc"),
+                    animais=dados.get("animais", []),
+                    posts=dados.get("posts", []),
                     usuarioID=str(dados.get("_id"))
                 )
             else:
@@ -41,6 +66,8 @@ class UsuarioDAO:
             if dados:
                 animais=dados.get("animais", [])
                 print("Lista de animais:", animais)
+                posts = dados.get("posts", [])
+                print("Lista de posts: ", posts)
 
                 return Usuario(
                     nome=dados.get("nome"),
@@ -50,12 +77,41 @@ class UsuarioDAO:
                     imgPerfil=dados.get("imgPerfil"),
                     desc=dados.get("desc"),
                     animais=animais,
+                    posts=posts,
                     usuarioID=dados.get("_id")
                 )
             else:
                 return None
         except Exception as err:
             print(f"Erro ao buscar usuário: {err}")
+
+    def buscaUsuarioPorAnimal(self, animal_id):
+        try:
+            if isinstance(animal_id, str):
+                animal_id = ObjectId(animal_id)
+
+            query = {"animais": animal_id}
+            dados = self.collection.find_one(query)
+
+            if dados:
+                return Usuario(
+                    nome=dados.get("nome"),
+                    email=dados.get("email"),
+                    senha=dados.get("senha"),
+                    verificarUser=dados.get("verificarUser"),
+                    imgPerfil=dados.get("imgPerfil"),
+                    desc=dados.get("desc"),
+                    animais=dados.get("animais", []), 
+                    posts=dados.get("posts", []),
+                    usuarioID=str(dados.get("_id"))
+                )
+            else:
+                print(f"\033[31mNenhum usuário encontrado com o animal de ID {animal_id}\033[0;0m")
+                return None
+        except Exception as e:
+            print(f"Erro ao buscar usuário por animal: {e}")
+            return None
+
 
     def buscaUsuarios(self):
         try:
@@ -70,6 +126,7 @@ class UsuarioDAO:
                     imgPerfil=dado.get("imgPerfil"),
                     desc=dado.get("desc"),
                     animais=dado.get("animais", []),
+                    posts=dado.get("posts", []),
                     usuarioID=str(dado.get("_id"))
                 )
                 usuarios.append(usuario)
@@ -81,9 +138,8 @@ class UsuarioDAO:
 
     def insereUsuario(self, usuario):
         try:
-            # Carrega a imagem padrão em bytes e armazena no GridFS, se não houver imagem personalizada
             img_id = None
-            with open("static/images/person-1.jpg", 'rb') as f:  # caminho para a imagem padrão
+            with open("static/images/person-1.jpg", 'rb') as f:  
                 img_data = f.read()
                 img_id = self.fs.put(img_data, filename="person-1.jpg")
 
@@ -94,7 +150,8 @@ class UsuarioDAO:
                 "verificarUser": usuario.verificarUser,
                 "imgPerfil": img_id,  # Armazena o ID do GridFS em vez do caminho
                 "desc": usuario.desc,
-                "animais": usuario.animais
+                "animais": usuario.animais,
+                "posts": usuario.posts
             }
             result = self.collection.insert_one(dados)
             return result.inserted_id is not None
@@ -105,11 +162,10 @@ class UsuarioDAO:
 
     def alteraUsuario(self, usuario):
         try:
-            # Define a consulta pelo ID do usuário
+
             query = {"_id": ObjectId(usuario.usuarioID)}
             print(f"\nIniciando atualização do usuário com ID: {usuario.usuarioID}")
 
-            # Obtém o documento atual do usuário
             current_user = self.collection.find_one(query)
             if not current_user:
                 print(f"Erro: Usuário com ID {usuario.usuarioID} não encontrado no banco de dados.")
@@ -117,14 +173,12 @@ class UsuarioDAO:
 
             print(f"Dados atuais do usuário: {current_user}")
 
-            # Define a nova imagem de perfil
             img_id_str = usuario.imgPerfil if usuario.imgPerfil else current_user.get('imgPerfil')
             if img_id_str:
                 print("Usando nova imagem de perfil fornecida." if usuario.imgPerfil else "Mantendo a imagem de perfil existente.")
             else:
                 print("Nenhuma imagem de perfil fornecida.")
 
-            # Dados a serem atualizados
             novos_dados = {
                 "$set": {
                     "nome": usuario.nome.lower(),
@@ -133,16 +187,15 @@ class UsuarioDAO:
                     "verificarUser": usuario.verificarUser,
                     "imgPerfil": img_id_str,
                     "desc": usuario.desc,
-                    "animais": usuario.animais
+                    "animais": usuario.animais,
+                    "posts": usuario.posts
                 }
             }
             print(f"Novos dados para atualização: {novos_dados}")
 
-            # Realiza a atualização no banco de dados
             result = self.collection.update_one(query, novos_dados)
             print(f"Documentos modificados: {result.modified_count}")
 
-            # Verifica o documento atualizado para garantir que a imagem foi alterada
             updated_user = self.collection.find_one(query)
             print(f"\nDocumento atualizado: {updated_user}")
 
@@ -157,10 +210,23 @@ class UsuarioDAO:
             return False
 
 
-    def apagarUsuario(self, usuario):
+    def apagarUsuario(self, usuarioID, apagarPost, apagarAnimal):
         try:
-            query = {"email": usuario.email}
-            result = self.collection.delete_one(query)
+            usuario = self.collection.find_one({"_id": ObjectId(usuarioID)})
+            
+            if usuario:
+                if 'posts' in usuario:
+                    posts_ids = usuario['posts']
+                    for post_id in posts_ids:
+                        apagarPost(post_id)  
+
+                if 'animais' in usuario:
+                    animais_ids = usuario['animais']
+                    for animal_id in animais_ids:
+                        apagarAnimal(animal_id)  
+
+                result = self.collection.delete_one({"_id": ObjectId(usuarioID)})
+            
             return result.deleted_count > 0
         except Exception as err:
             print(f"Erro ao apagar usuário: {err}")
@@ -175,9 +241,49 @@ class UsuarioDAO:
             print(f"Erro ao adicionar animal ao usuário: {err}")
             return False
 
+    def removeAnimalDoUsuario(self, usuario_id, animal_id):
+        try:
+            if isinstance(animal_id, str):
+                animal_id = ObjectId(animal_id)
+            
+            usuario = self.collection.find_one({"_id": usuario_id})
+            
+            if usuario:
+                usuario['animais'] = [a for a in usuario['animais'] if a != animal_id]
+                
+                self.collection.update_one(
+                    {"_id": usuario_id},
+                    {"$set": {"animais": usuario['animais']}}
+                )
+                print(f"Animal {animal_id} removido da lista de animais do usuário.")
+                return True
+            else:
+                print("Usuário não encontrado.")
+                return False
+                
+        except Exception as err:
+            print(f"Erro ao remover animal: {err}")
+            return False
+'''
+    def acaoUser(self, acao, **kwargs):
+        try:
+            if acao.lower() == "addanimal": #userId, animalID
+                for indice, (chave, valor) in enumerate(kwargs.items()):
+                    if indice == 0:
+                        query = {f"{chave}": ObjectId(valor)}
+                    if indice == 1:
+                        novo_animal = {"$push": {f"{chave}": valor}}
+
+                result = self.collection.update_one(query, novo_animal)
+                return result.modified_count > 0
+
+            if acao.lower() == "removeanimal":
+
+            if acao.lower() == "addpost":
+
+            if acao.lower() == "removepost":'''
 
 
-# Exemplo de uso
 
 usuarioDAO = UsuarioDAO()
 
@@ -261,7 +367,7 @@ if usuario:
 
 """   def insereUsuario(self, usuario):
         try:
-            # Verifica se o usuário enviou uma imagem; se não, usa uma imagem padrão
+            
             if usuario.imgPerfil:
                 if isinstance(usuario.imgPerfil, str):
                     with open(usuario.imgPerfil, 'rb') as f:

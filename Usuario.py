@@ -1,7 +1,7 @@
 from ConnectionFactory import *
 
 class Usuario:
-    def __init__(self, nome, email, senha, verificarUser, imgPerfil, desc, animais, usuarioID=None):
+    def __init__(self, nome, email, senha, verificarUser, imgPerfil, desc, animais, posts, usuarioID=None):
         self.__email = email
         self.__nome = nome
         self.__senha = senha
@@ -9,6 +9,7 @@ class Usuario:
         self.__imgPerfil = imgPerfil
         self.__desc = desc
         self.__usuarioID = usuarioID
+        self.__posts = posts if posts else [] 
         self.__animais = animais if animais else [] 
         #Se animais tiver algum valor (não for None ou uma lista vazia), ele será atribuído a self.__animais.
         #Caso contrário (se animais for None ou não tiver sido passado), a expressão usará uma lista vazia [] como valor padrão.
@@ -49,10 +50,6 @@ class Usuario:
     def usuarioID(self):
         return self.__usuarioID
 
-    @usuarioID.setter
-    def usuarioID(self, usuarioID):
-        self.__usuarioID = usuarioID
-
     @property
     def imgPerfil(self):
         return self.__imgPerfil
@@ -76,6 +73,15 @@ class Usuario:
     @animais.setter
     def animais(self, animais):
         self.__animais = animais
+
+    @property
+    def posts(self):
+        return self.__posts
+
+    @posts.setter
+    def posts(self, posts):
+        if isinstance(posts, list):
+            self.__posts = posts
 
     def __str__(self):
         return f"Nome: {self.__nome}\nEmail: {self.__email}\nID: {self.__usuarioID}"

@@ -4,19 +4,20 @@
 
 {% block css %}
 <style>
-    .li-animais {
+    .li-post {
         border: solid black 3px; 
         border-radius: 30px; 
-        height: 300px; 
-        width: 300px;
+        height: auto;
+        width: 100%;
         display: flex;
         flex-direction: column;
         align-items: center;
         justify-content: center;
         background-color: gray;
+        padding: 10px;
     }
 
-    .ul-animais {
+    .ul-posts {
         display: grid;
         grid-template-columns: 300px 300px;
         position: relative;
@@ -30,167 +31,126 @@
         align-items: center;
         justify-content: space-around; 
     }
+
+    .container {
+        width: 80%;
+        margin: 0 auto;
+        padding: 40px 0;
+    }
+    h1 {
+        text-align: center;
+        font-size: 2.5em;
+        color: #333;
+        margin-bottom: 20px;
+    }
+    .ul-posts {
+        list-style-type: none;
+        padding: 0;
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(250px, 1fr)); /* Responsivo */
+        gap: 20px;
+    }
+    .post {
+        background-color: white;
+        border-radius: 10px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        margin-bottom: 20px;
+        overflow: hidden;
+        width: 100%;  
+        max-width: 350px; /* Limita a largura */
+        transition: transform 0.3s ease-in-out;
+        display: flex;
+        flex-direction: column; /* Alinha o conteúdo verticalmente */
+    }
+    .post:hover {
+        transform: translateY(-10px);
+    }
+    .post-header {
+        background-color:  #3d3776;
+        color: white;
+        padding: 20px;
+        flex-grow: 0; /* Impede que o cabeçalho cresça */
+    }
+    .post-header h2 {
+        font-size: 1.6em;
+        margin: 0;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+    .post-header p {
+        font-size: 1em;
+        margin: 10px 0 0;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+    .post-footer {
+        padding: 10px 20px;
+        background-color: #f9f9f9;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-grow: 1; /* Faz o rodapé se ajustar ao espaço restante */
+    }
+    .post-footer p {
+        font-size: 1em;
+        color: #777;
+    }
+    .read-more {
+        text-decoration: none;
+        background-color:  #3d3776;
+        color: white;
+        padding: 10px 20px;
+        border-radius: 5px;
+        font-weight: bold;
+        transition: background-color 0.3s;
+    }
+    .read-more:hover {
+        background-color: #3d3776;
+    }
 </style>
 {% endblock %}
 
-{% block mainTitulo %}
-blog
-{% endblock %}
-
 {% block main %}
-		<!-- Start Hero Section -->
-        <div class="hero">
-            <div class="container">
-                <div class="row justify-content-between">
-                    <div class="col-lg-5">
-                        <div class="intro-excerpt">
-                            <h1>Blog</h1>
-                            <p class="mb-4">Bem-vindo ao nosso blog! Aqui você encontrará artigos, dicas e novidades sobre Pets. Fique à vontade para explorar e deixar seus comentários – sua opinião é muito importante para nós!</p>
-                            <!--<p><a href="" class="btn btn-secondary me-2">Shop Now</a><a href="#" class="btn btn-white-outline">Explore</a></p>-->
-                        </div>
-                    </div>
-                    <div class="col-lg-7">
-                        <div class="hero-img-wrap">
-                            <img src="{{ url_for('static', filename = 'images/couch.png') }}" class="img-fluid">
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    <!-- End Hero Section -->
-
-    
-
-    <!-- Start Blog Section -->
-
-    <ul class="ul-animais ">
-        {% for animal in animais %}
-            <li class="li-animais">
-                <a href="{{ url_for('blog', nome=animal.nome) }}">
-                <div style="height: 200px; width: 200px;">
-                Foto
-                </div>
-                <strong>{{ animal.nome }}</strong> - {{ animal.desc }}</a>
-            </li>
-        {% endfor %}
-    </ul>
-
-
-    <div class="blog-section">
+    <div class="hero">
         <div class="container">
-            
-            <div class="row">
-
-                <div class="col-12 col-sm-6 col-md-4 mb-5">
-                    <div class="post-entry">
-                        <a href="#" class="post-thumbnail"><img src="../static/images/post-1.png" alt="Image" class="img-fluid"></a>
-                        <div class="post-content-entry">
-                            <h3><a href="animal">Post 1 - ABCABCABC</a></h3>
-                            <div class="meta">
-                                <span>por <a href="#">Kristin Watson</a></span> <span>em <a href="#">Dec 19, 2021</a></span>
-                            </div>
-                        </div>
+            <div class="row justify-content-between">
+                <div class="col-lg-5">
+                    <div class="intro-excerpt">
+                        <h1>Blog</h1>
+                        <p class="mb-4">Bem-vindo ao nosso blog! Aqui você encontrará artigos, dicas e novidades sobre Pets. Fique à vontade para explorar e deixar seus comentários – sua opinião é muito importante para nós!</p>
                     </div>
                 </div>
-
-                <div class="col-12 col-sm-6 col-md-4 mb-5">
-                    <div class="post-entry">
-                        <a href="#" class="post-thumbnail"><img src="../static/images/post-1.png" alt="Image" class="img-fluid"></a>
-                        <div class="post-content-entry">
-                            <h3><a href="animal">Post 2 - ABCABCABC</a></h3>
-                            <div class="meta">
-                                <span>por <a href="#">Robert Fox</a></span> <span>em <a href="#">Dec 15, 2021</a></span>
-                            </div>
-                        </div>
+                <div class="col-lg-7">
+                    <div class="hero-img-wrap">
+                        <img src="{{ url_for('static', filename = 'images/a1.png') }}" class="img-fluid" style="top: -18px;">
                     </div>
                 </div>
-
-                <div class="col-12 col-sm-6 col-md-4 mb-5">
-                    <div class="post-entry">
-                        <a href="#" class="post-thumbnail"><img src="../static/images/post-1.png" alt="Image" class="img-fluid"></a>
-                        <div class="post-content-entry">
-                            <h3><a href="#">Post 3 - ABCABCABC</a></h3>
-                            <div class="meta">
-                                <span>por <a href="#">Kristin Watson</a></span> <span>em <a href="#">Dec 12, 2021</a></span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="col-12 col-sm-6 col-md-4 mb-5">
-                    <div class="post-entry">
-                        <a href="#" class="post-thumbnail"><img src="../static/images/post-1.png" alt="Image" class="img-fluid"></a>
-                        <div class="post-content-entry">
-                            <h3><a href="#">Post 4 - ABCABCABC</a></h3>
-                            <div class="meta">
-                                <span>por <a href="#">Kristin Watson</a></span> <span>em <a href="#">Dec 19, 2021</a></span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="col-12 col-sm-6 col-md-4 mb-5">
-                    <div class="post-entry">
-                        <a href="#" class="post-thumbnail"><img src="../static/images/post-1.png" alt="Image" class="img-fluid"></a>
-                        <div class="post-content-entry">
-                            <h3><a href="#">Post 5 - ABCABCABC</a></h3>
-                            <div class="meta">
-                                <span>por <a href="#">Robert Fox</a></span> <span>em <a href="#">Dec 15, 2021</a></span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="col-12 col-sm-6 col-md-4 mb-5">
-                    <div class="post-entry">
-                        <a href="#" class="post-thumbnail"><img src="../static/images/post-1.png" alt="Image" class="img-fluid"></a>
-                        <div class="post-content-entry">
-                            <h3><a href="#">Post 6 - ABCABCABC</a></h3>
-                            <div class="meta">
-                                <span>por <a href="#">Kristin Watson</a></span> <span>em <a href="#">Dec 12, 2021</a></span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="col-12 col-sm-6 col-md-4 mb-5">
-                    <div class="post-entry">
-                        <a href="#" class="post-thumbnail"><img src="../static/images/post-1.png" alt="Image" class="img-fluid"></a>
-                        <div class="post-content-entry">
-                            <h3><a href="#">Post 7 - ABCABCABC</a></h3>
-                            <div class="meta">
-                                <span>por <a href="#">Kristin Watson</a></span> <span>em <a href="#">Dec 19, 2021</a></span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="col-12 col-sm-6 col-md-4 mb-5">
-                    <div class="post-entry">
-                        <a href="#" class="post-thumbnail"><img src="../static/images/post-1.png" alt="Image" class="img-fluid"></a>
-                        <div class="post-content-entry">
-                            <h3><a href="#">Post 8 - ABCABCABC</a></h3>
-                            <div class="meta">
-                                <span>por <a href="#">Robert Fox</a></span> <span>em <a href="#">Dec 15, 2021</a></span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="col-12 col-sm-6 col-md-4 mb-5">
-                    <div class="post-entry">
-                        <a href="#" class="post-thumbnail"><img src="../static/images/post-1.png" alt="Image" class="img-fluid"></a>
-                        <div class="post-content-entry">
-                            <h3><a href="#">Post 9 - ABCABCABC</a></h3>
-                            <div class="meta">
-                                <span>por <a href="#">Kristin Watson</a></span> <span>em <a href="#">Dec 12, 2021</a></span>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
             </div>
         </div>
     </div>
-    <!-- End Blog Section -->	
+
+
+
+    <div class="container">
+        <ul class="ul-posts">
+            {% for post in posts %}
+                {% if post['status'] == "Ativado" %}
+                    <li class="post">
+                        <div class="post-header">   
+                            <h2><a href="{{ url_for('blog', post_id=post.postID|string) }}" style="color: white; text-decoration: none;">{{ post.titulo }}</a></h2>
+                            <p>{{ post['dataCriacao'] }}</p>
+                            <p>{{ post['autor'] }}</p>
+                        </div>
+                        <div class="post-footer">
+                            <p>{{ post['status'] }}</p>
+                            <a href="{{ url_for('blog', post_id=post.postID|string) }}" class="btn read-more">Leia mais</a>
+                        </div>
+                    </li>
+                {% endif %}
+            {% endfor %}
+        </ul>
+    </div>
+
 {% endblock %}

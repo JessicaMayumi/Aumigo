@@ -12,6 +12,51 @@
     color: #3d3776;
 }
 
+.imgs-grid::before {
+    color: rgb(61, 55, 118) !important;
+}
+
+.post {
+        background-color: white;
+        border-radius: 10px;
+        box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+        margin-bottom: 20px;
+        overflow: hidden;
+        width: 100%;  
+        max-width: 350px; /* Limita a largura */
+        transition: transform 0.3s ease-in-out;
+        display: flex;
+        flex-direction: column; /* Alinha o conteúdo verticalmente */
+    }
+    .post:hover {
+        transform: translateY(-10px);
+    }
+
+    .post-footer {
+        padding: 10px 20px;
+        background-color: #f9f9f9;
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        flex-grow: 1; /* Faz o rodapé se ajustar ao espaço restante */
+    }
+    .post-footer p {
+        font-size: 1em;
+        color: #777;
+    }
+    .read-more {
+        text-decoration: none;
+        background-color:  #3d3776;
+        color: white;
+        padding: 10px 20px;
+        border-radius: 5px;
+        font-weight: bold;
+        transition: background-color 0.3s;
+    }
+    .read-more:hover {
+        background-color: #3d3776;
+    }
+
 </style>
 {% endblock %}
 
@@ -29,7 +74,7 @@
             </div>
             <div class="col-lg-7">
                 <div class="hero-img-wrap">
-                    <img src="../static/images/img6.png" class="img-fluid">
+                    <img src="../static/images/img6.png" class="img-fluid" style="top: -67px;">
                 </div>
             </div>
         </div>
@@ -46,16 +91,16 @@
         <div class="col-md-12 col-lg-3 mb-5 mb-lg-0">
             <h2 class="mb-4 section-title">Alguns Aumigos</h2>
             <p class="mb-4">Para visualizar mais aumigos na fila clique em *Explorar*</p>
-            <p><a href="animais" class="btn" style="color: white; border: solid 1px #3d3776;">Explorar</a></p>
+            <p><a href="{{ url_for('animais')}}" class="btn" style="color: white; border: solid 1px #3d3776;">Explorar</a></p>
         </div> 
         <!-- End Column 1 -->
 
         <!-- Start Column 2 -->
         <div class="col-12 col-md-4 col-lg-3 mb-5 mb-md-0">
-            <a class="product-item" href="favoritos">
-                <img src="../static/images/img2.jpg" class="img-fluid product-thumbnail">
-                <h3 class="product-title">Cachorro 1</h3>
-                <strong class="product-price">Desc</strong>
+            <a class="product-item" href="{{ url_for('animais', tipo='cachorro')}}">
+                <img src="../static/images/cachorro.png" class="img-fluid product-thumbnail">
+                <h3 class="product-title">Cachorro</h3>
+                <strong class="product-price"></strong>
 
                 <span class="icon-cross">
                     <img src="../static/images/cross.svg" class="img-fluid">
@@ -66,10 +111,10 @@
 
         <!-- Start Column 3 -->
         <div class="col-12 col-md-4 col-lg-3 mb-5 mb-md-0">
-            <a class="product-item" href="favoritos">
-                <img src="../static/images/img2.jpg" class="img-fluid product-thumbnail">
-                <h3 class="product-title">Cachorro 2</h3>
-                <strong class="product-price">Desc</strong>
+            <a class="product-item" href="{{ url_for('animais', tipo='gato')}}">
+                <img src="../static/images/gato.png" class="img-fluid product-thumbnail">
+                <h3 class="product-title">Gato</h3>
+                <strong class="product-price"></strong>
 
                 <span class="icon-cross">
                     <img src="../static/images/cross.svg" class="img-fluid">
@@ -80,10 +125,10 @@
 
         <!-- Start Column 4 -->
         <div class="col-12 col-md-4 col-lg-3 mb-5 mb-md-0">
-            <a class="product-item" href="favorito">
-                <img src="../static/images/img2.jpg" class="img-fluid product-thumbnail">
-                <h3 class="product-title">Cachorro 3</h3>
-                <strong class="product-price">Desc</strong>
+            <a class="product-item" href="{{ url_for('animais', tipo='coelho')}}">
+                <img src="../static/images/coelhos.png" class="img-fluid product-thumbnail">
+                <h3 class="product-title">Coelho</h3>
+                <strong class="product-price"></strong>
 
                 <span class="icon-cross">
                     <img src="../static/images/cross.svg" class="img-fluid">
@@ -181,7 +226,7 @@
                 <li>Educação e Suporte</li>
                 <li>Engajamento Comunitário</li>
             </ul>
-            <p><a herf="#" class="btn" style="color: white; border: solid 1px #3d3776;">Explore</a></p>
+            
         </div>
     </div>
 </div>
@@ -237,157 +282,170 @@
 </div>
 <!-- End Popular Product -->
 
-<!-- Start Testimonial Slider -->
-<div class="testimonial-section">
-<div class="container">
-    <div class="row">
-        <div class="col-lg-7 mx-auto text-center">
-            <h2 class="section-title">Comentários</h2>
+   <!-- Start Testimonial Slider -->
+   <div class="testimonial-section before-footer-section" style="background-color: white;">
+    <div class="container">
+        <div class="row">
+            <div class="col-lg-7 mx-auto text-center">
+                <h2 class="section-title">Depoimentos</h2>
+            </div>
         </div>
-    </div>
 
-    <div class="row justify-content-center">
-        <div class="col-lg-12">
-            <div class="testimonial-slider-wrap text-center">
+        <div class="row justify-content-center">
+            <div class="col-lg-12">
+                <div class="testimonial-slider-wrap text-center">
 
-                <div id="testimonial-nav">
-                    <span class="prev" data-controls="prev"><span class="fa fa-chevron-left"></span></span>
-                    <span class="next" data-controls="next"><span class="fa fa-chevron-right"></span></span>
+                    <div id="testimonial-nav">
+                        <span class="prev" data-controls="prev"><span class="fa fa-chevron-left"></span></span>
+                        <span class="next" data-controls="next"><span class="fa fa-chevron-right"></span></span>
+                    </div>
+
+                    <div class="testimonial-slider">
+                        
+                        <div class="item">
+                            <div class="row justify-content-center">
+                                <div class="col-lg-8 mx-auto">
+
+                                    <div class="testimonial-block text-center">
+                                        <blockquote class="mb-5">
+                                            <p>&ldquo;Descobri o Aumigo enquanto procurava um site confiável para adotar um pet. Fiquei impressionada com a organização e o carinho da plataforma. A adoção do meu gato foi rápida e fácil, e as dicas no blog me ajudaram muito com os cuidados. Recomendo a todos que querem mudar suas vidas e oferecer um lar cheio de amor para um animal.&rdquo;</p>
+                                        </blockquote>
+
+                                        <div class="author-info">
+                                            <div class="author-pic">
+                                                <img src="../static/images/person_4.jpg" alt="Maria Jones" class="img-fluid">
+                                            </div>
+                                            <h3 class="font-weight-bold">Ana Beatriz</h3>
+                                            <span class="position d-block mb-3">Professora</span>
+                                        </div>
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div> 
+                        <!-- END item -->
+
+                        <div class="item">
+                            <div class="row justify-content-center">
+                                <div class="col-lg-8 mx-auto">
+
+                                    <div class="testimonial-block text-center">
+                                        <blockquote class="mb-5">
+                                            <p>&ldquo;O Aumigo foi uma das melhores descobertas que fiz na internet. A experiência de adotar meu cachorro através da plataforma foi incrivelmente tranquila. Além disso, o blog trouxe informações valiosas que me guiaram nos primeiros meses com ele. É incrível saber que existem iniciativas tão humanas e bem organizadas. Adotar um pet nunca foi tão especial e emocionante.&rdquo;</p>
+                                        </blockquote>
+
+                                        <div class="author-info">
+                                            <div class="author-pic">
+                                                <img src="../static/images/person_3.jpg" alt="Maria Jones" class="img-fluid">
+                                            </div>
+                                            <h3 class="font-weight-bold">Lucas Ferreira</h3>
+                                            <span class="position d-block mb-3">Desenvolvedor de Software</span>
+                                        </div>
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div> 
+                        <!-- END item -->
+
+                        <div class="item">
+                            <div class="row justify-content-center">
+                                <div class="col-lg-8 mx-auto">
+
+                                    <div class="testimonial-block text-center">
+                                        <blockquote class="mb-5">
+                                            <p>&ldquo;Adotar pelo Aumigo foi muito mais do que uma simples decisão, foi um momento transformador. O site é super intuitivo, e o blog traz conteúdos fantásticos sobre adoção responsável. Foi incrível acompanhar histórias de outros adotantes e, enfim, encontrar o meu novo amigo. Sou extremamente grata por essa experiência única e pela oportunidade de trazer alegria para minha vida.&rdquo;</p>
+                                        </blockquote>
+
+                                        <div class="author-info">
+                                            <div class="author-pic">
+                                                <img src="../static/images/person-1.png" alt="Maria Jones" class="img-fluid">
+                                            </div>
+                                            <h3 class="font-weight-bold">Mariana Oliveira</h3>
+                                            <span class="position d-block mb-3">Médica Veterinária</span>
+                                        </div>
+                                    </div>
+
+                                </div>
+                            </div>
+                        </div> 
+                        <!-- END item -->
+
+                    </div>
+
                 </div>
-
-                <div class="testimonial-slider">
-                    
-                    <div class="item">
-                        <div class="row justify-content-center">
-                            <div class="col-lg-8 mx-auto">
-
-                                <div class="testimonial-block text-center">
-                                    <blockquote class="mb-5">
-                                        <p>&ldquo;Donec facilisis quam ut purus rutrum lobortis. Donec vitae odio quis nisl dapibus malesuada. Nullam ac aliquet velit. Aliquam vulputate velit imperdiet dolor tempor tristique. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Integer convallis volutpat dui quis scelerisque.&rdquo;</p>
-                                    </blockquote>
-
-                                    <div class="author-info">
-                                        <div class="author-pic">
-                                            <img src="../static/images/person-1.png" alt="Maria Jones" class="img-fluid">
-                                        </div>
-                                        <h3 class="font-weight-bold">Maria Jones</h3>
-                                        <span class="position d-block mb-3">CEO, Co-Founder, XYZ Inc.</span>
-                                    </div>
-                                </div>
-
-                            </div>
-                        </div>
-                    </div> 
-                    <!-- END item -->
-
-                    <div class="item">
-                        <div class="row justify-content-center">
-                            <div class="col-lg-8 mx-auto">
-
-                                <div class="testimonial-block text-center">
-                                    <blockquote class="mb-5">
-                                        <p>&ldquo;Donec facilisis quam ut purus rutrum lobortis. Donec vitae odio quis nisl dapibus malesuada. Nullam ac aliquet velit. Aliquam vulputate velit imperdiet dolor tempor tristique. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Integer convallis volutpat dui quis scelerisque.&rdquo;</p>
-                                    </blockquote>
-
-                                    <div class="author-info">
-                                        <div class="author-pic">
-                                            <img src="../static/images/person-1.png" alt="Maria Jones" class="img-fluid">
-                                        </div>
-                                        <h3 class="font-weight-bold">Maria Jones</h3>
-                                        <span class="position d-block mb-3">CEO, Co-Founder, XYZ Inc.</span>
-                                    </div>
-                                </div>
-
-                            </div>
-                        </div>
-                    </div> 
-                    <!-- END item -->
-
-                    <div class="item">
-                        <div class="row justify-content-center">
-                            <div class="col-lg-8 mx-auto">
-
-                                <div class="testimonial-block text-center">
-                                    <blockquote class="mb-5">
-                                        <p>&ldquo;Donec facilisis quam ut purus rutrum lobortis. Donec vitae odio quis nisl dapibus malesuada. Nullam ac aliquet velit. Aliquam vulputate velit imperdiet dolor tempor tristique. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Integer convallis volutpat dui quis scelerisque.&rdquo;</p>
-                                    </blockquote>
-
-                                    <div class="author-info">
-                                        <div class="author-pic">
-                                            <img src="../static/images/person-1.png" alt="Maria Jones" class="img-fluid">
-                                        </div>
-                                        <h3 class="font-weight-bold">Maria Jones</h3>
-                                        <span class="position d-block mb-3">CEO, Co-Founder, XYZ Inc.</span>
-                                    </div>
-                                </div>
-
-                            </div>
-                        </div>
-                    </div> 
-                    <!-- END item -->
-
-                </div>
-
             </div>
         </div>
     </div>
-</div>
 </div>
 <!-- End Testimonial Slider -->
-
-<!-- Start Blog Section -->
-<div class="blog-section">
-<div class="container">
-    <div class="row mb-5">
-        <div class="col-md-6">
-            <h2 class="section-title">Recentes</h2>
+{% if posts is not none and posts|length > 0 %}
+    <!-- Start Blog Section -->
+    <div class="blog-section">
+    <div class="container">
+        <div class="row mb-5">
+            <div class="col-md-6">
+                <h2 class="section-title">Recentes</h2>
+            </div>
+            <div class="col-md-6 text-start text-md-end">
+                <a href="{{ url_for('blog')}}" class="more roxo">Visualizar tudo</a>
+            </div>
         </div>
-        <div class="col-md-6 text-start text-md-end">
-            <a href="#" class="more roxo">Visualizar tudo</a>
+
+        <div class="row">
+
+            <div class="col-12 col-sm-6 col-md-4 mb-4 mb-md-0">
+                <div class="post-entry post">
+                    <a href="{{ url_for('blog', post_id=posts[0].postID|string) }}" class="post-thumbnail"></a> 
+                    <div class="post-content-entry">
+                        <h3><a href="{{ url_for('blog', post_id=posts[0].postID|string) }}" class="roxo">{{posts[0].titulo}}</a></h3>
+                        <div class="meta">
+                            <span>escrito por <em>{{posts[0].autor}}</em></span> <span>em {{posts[0].dataCriacao}}</span>
+                        </div>
+                    </div>
+                    <div class="post-footer">
+                        <p>{{ posts[0].status }}</p>
+                        <a href="{{ url_for('blog', post_id=posts[0].postID|string) }}" class="btn read-more">Leia mais</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-12 col-sm-6 col-md-4 mb-4 mb-md-0">
+                <div class="post-entry post">
+                    <a href="{{ url_for('blog', post_id=posts[1].postID|string) }}" class="post-thumbnail"></a>
+                    <div class="post-content-entry">
+                        <h3><a href="{{ url_for('blog', post_id=posts[1].postID|string) }}" class="roxo">{{posts[1].titulo}}</a></h3>
+                        <div class="meta">
+                            <span>escrito por <em>{{posts[1].autor}}</em></span> <span>em {{posts[1].dataCriacao}}</span>
+                        </div>
+                    </div>
+                    <div class="post-footer">
+                        <p>{{ posts[1].status }}</p>
+                        <a href="{{ url_for('blog', post_id=posts[1].postID|string) }}" class="btn read-more">Leia mais</a>
+                    </div>
+                </div>
+            </div>
+
+            <div class="col-12 col-sm-6 col-md-4 mb-4 mb-md-0">
+                <div class="post-entry post">
+                    <a href="{{ url_for('blog', post_id=posts[2].postID|string) }}" class="post-thumbnail"></a>
+                    <div class="post-content-entry">
+                        <h3><a href="{{ url_for('blog', post_id=posts[2].postID|string) }}" class="roxo">{{posts[2].titulo}}</a></h3>
+                        <div class="meta">
+                            <span>escrito por <em>{{posts[3].autor}}</em></span> <span>em {{posts[2].dataCriacao}}</span>
+                        </div>
+                    </div>
+                    <div class="post-footer">
+                        <p>{{ posts[2].status }}</p>
+                        <a href="{{ url_for('blog', post_id=posts[2].postID|string) }}" class="btn read-more">Leia mais</a>
+                    </div>
+                </div>
+            </div>
+
         </div>
     </div>
-
-    <div class="row">
-
-        <div class="col-12 col-sm-6 col-md-4 mb-4 mb-md-0">
-            <div class="post-entry">
-                <a href="#" class="post-thumbnail"><img src="../static/images/img1.png" alt="Image" class="img-fluid"></a>
-                <div class="post-content-entry">
-                    <h3><a href="#" class="roxo">Post 1 - ABCABCABC</a></h3>
-                    <div class="meta">
-                        <span>escrito por <a href="#" class="roxo">Kristin Watson</a></span> <span>em Dec 19, 2021</span>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-12 col-sm-6 col-md-4 mb-4 mb-md-0">
-            <div class="post-entry">
-                <a href="#" class="post-thumbnail"><img src="../static/images/img1.png" alt="Image" class="img-fluid"></a>
-                <div class="post-content-entry">
-                    <h3><a href="#" class="roxo">Post 2 - ABCABCABC</a></h3>
-                    <div class="meta">
-                        <span>escrito por <a href="#" class="roxo">Robert Fox</a></span> <span>em Dec 15, 2021</span>
-                    </div>
-                </div>
-            </div>
-        </div>
-
-        <div class="col-12 col-sm-6 col-md-4 mb-4 mb-md-0">
-            <div class="post-entry">
-                <a href="#" class="post-thumbnail"><img src="../static/images/img1.png" alt="Image" class="img-fluid"></a>
-                <div class="post-content-entry">
-                    <h3><a href="#" class="roxo">Post 3 - ABCABCABC</a></h3>
-                    <div class="meta">
-                        <span>escrito por <a href="#" class="roxo">Kristin Watson</a></span> <span>em Dec 12, 2021</span>
-                    </div>
-                </div>
-            </div>
-        </div>
-
     </div>
-</div>
-</div>
+{% endif %}
 
 <!-- End Blog Section -->	
 

@@ -14,123 +14,206 @@
         z-index: 1000;
         display: none;
     }
+
     .mensagem-sucesso {
-        background-color: #28a745; /* Verde para sucesso */
+        background-color: #28a745;
+        /* Verde para sucesso */
     }
+
     .mensagem-erro {
-        background-color: #dc3545; /* Vermelho para erro */
+        background-color: #dc3545;
+        /* Vermelho para erro */
+    }
+
+    .image-container {
+        display: flex;
+        gap: 10px;
+        flex-wrap: wrap;
+    }
+
+    .image-item {
+        position: relative;
+        display: inline-block;
+        cursor: grab;
+    }
+
+    .image-item.dragging {
+        opacity: 0.5;
+    }
+
+    .image-item img {
+        width: 150px;
+        height: 150px;
+        object-fit: cover;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+    }
+
+    .controls {
+        position: absolute;
+        top: 5px;
+        right: 5px;
+        display: flex;
+        gap: 5px;
+    }
+
+    .control-btn {
+        background-color: rgba(255, 255, 255, 0.8);
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        padding: 5px;
+        cursor: pointer;
+        font-size: 0.8rem;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        transition: background-color 0.3s ease;
+    }
+
+    .control-btn:hover {
+        background-color: rgba(240, 240, 240, 0.9);
+    }
+
+    .delete-btn {
+        color: red;
+    }
+
+    .drag-btn {
+        color: #555;
+    }
+
+    .custom-file-input {
+        display: inline-block;
+        padding: 5px 10px;
+        background-color: #3d3776;
+        color: white;
+        border: none;
+        border-radius: 5px;
+        cursor: pointer;
+        font-size: 1rem;
+    }
+
+    #imageInput {
+        display: none;
     }
 </style>
-<link href="static/css/perfil.css" rel="stylesheet"> 
+<link href="static/css/perfil.css" rel="stylesheet">
 {% endblock %}
 
 
-{% block titulo %} AUMIGO - BLOG {% endblock %}
+{% block titulo %} AUMIGO - Adicionar Animal {% endblock %}
 
 {% block mainTitulo %}
-fav
+add animal
 {% endblock %}
 
 {% with mensagens = get_flashed_messages(with_categories=True) %}
 {% if mensagens %}
-    <div id="container-mensagem">   
-        {% for categoria, mensagem in mensagens %}
-            <div class="mensagem mensagem-{{ categoria }}">
-                {{ mensagem }}
-            </div>
-        {% endfor %}
+<div id="container-mensagem">
+    {% for categoria, mensagem in mensagens %}
+    <div class="mensagem mensagem-{{ categoria }}">
+        {{ mensagem }}
     </div>
-    <script>
-        document.addEventListener("DOMContentLoaded", function() {
-            var mensagens = document.querySelectorAll(".mensagem");
-            mensagens.forEach(function(mensagem) {
-                mensagem.style.display = "block";
-                setTimeout(function() {
-                    mensagem.style.opacity = 0;
-                    setTimeout(function() {
-                        mensagem.style.display = "none";
-                    }, 500); // Tempo de transição
-                }, 3000); // Tempo em que a mensagem ficará visível
-            });
+    {% endfor %}
+</div>
+<script>
+    document.addEventListener("DOMContentLoaded", function () {
+        var mensagens = document.querySelectorAll(".mensagem");
+        mensagens.forEach(function (mensagem) {
+            mensagem.style.display = "block";
+            setTimeout(function () {
+                mensagem.style.opacity = 0;
+                setTimeout(function () {
+                    mensagem.style.display = "none";
+                }, 500); // Tempo de transição
+            }, 3000); // Tempo em que a mensagem ficará visível
         });
-    </script>
+    });
+</script>
 {% endif %}
 {% endwith %}
 
 {% block main %}
 <!-- Start Hero Section -->
-        <div class="hero">
-            <div class="container">
-                <div class="row justify-content-between">
-                    <div class="col-lg-5">
-                        <div class="intro-excerpt">
-                            <h1>Adicionar Animal</h1>
-                        </div>
-                    </div>
-            
-                    <div class="col-lg-7">
-                        <div>
+<div class="hero">
+    <div class="container">
+        <div class="row justify-content-between">
+            <div class="col-lg-5">
+                <div class="intro-excerpt">
+                    <h1>Adicionar Animal</h1>
+                </div>
+            </div>
 
-                           
-                            
-                          </div>
-                    </div>
+            <div class="col-lg-7">
+                <div>
+
+
+
                 </div>
             </div>
         </div>
-    <!-- End Hero Section -->
-    <form action="{{ url_for('addAnimal') }}" method="POST" enctype="multipart/form-data">
-        <button type="submit" class="btn btn-sm btn-primary">Adicionar Pet</button>
-        <div class="card-body">
-          <form>
-            <h6 class="heading-small text-muted mb-4">Informações do Animal</h6>
-            <div class="pl-lg-4">
-              <div class="row">
+    </div>
+</div>
+<br>
+<!-- End Hero Section -->
+<form action="{{ url_for('addAnimal') }}" method="POST" enctype="multipart/form-data">
+    <button type="submit" class="btn btn-sm btn-primary" style="margin-left: 20px;">Adicionar Pet</button>
+    <div class="card-body">
+
+
+        <h6 class="heading-small text-muted mb-4">Informações do Animal</h6>
+        <div class="pl-lg-4">
+            <div class="row">
                 <div class="col-lg-6">
-                  <div class="form-group focused">
-                    <label class="form-control-label" for="input-username">Nome</label>
-                    <input type="text" id="input-username" name="nome" class="form-control form-control-alternative" placeholder="Nome" value="Nome" required>
-                  </div>
-                </div>
-                <div class="col-lg-6">
-                  <div class="form-group">
-                    <label class="form-control-label" for="tipo">Tipo</label> <!--select-->
-                    <select name="tipo" id="tipo" class="form-control form-control-alternative" required>
-                        <option value="cachorro">Cachorro</option>
-                        <option value="gato">Gato</option>
-                        <option value="coelho">Coelho</option>
-                        <option value="outros">Outros</option>
-                        </select>
-                  </div>
-                </div>
-                <div class="col-lg-6">
-                    <div class="form-group">
-                      <label class="form-control-label" for="raca">Raça</label> 
-                      <input type="text" id="raca" name="raca" class="form-control form-control-alternative" placeholder="Raça" value="Raça" required>
+                    <div class="form-group focused">
+                        <label class="form-control-label" for="input-username">Nome</label>
+                        <input type="text" id="input-username" name="nome" class="form-control form-control-alternative"
+                            placeholder="Nome" value="" required>
                     </div>
                 </div>
                 <div class="col-lg-6">
                     <div class="form-group">
-                      <label class="form-control-label" for="genero">Gênero</label> <!--select-->
+                        <label class="form-control-label" for="tipo">Tipo</label> <!--select-->
+                        <select name="tipo" id="tipo" class="form-control form-control-alternative" required>
+                            <option value="cachorro">Cachorro</option>
+                            <option value="gato">Gato</option>
+                            <option value="coelho">Coelho</option>
+                            <option value="outros">Outros</option>
+                        </select>
+                    </div>
+                </div>
+                <div class="col-lg-6">
+                    <div class="form-group">
+                        <label class="form-control-label" for="raca">Raça</label>
+                        <input type="text" id="raca" name="raca" class="form-control form-control-alternative"
+                            placeholder="Raça" value="" required>
+                    </div>
+                </div>
+                <div class="col-lg-6">
+                    <div class="form-group">
+                        <label class="form-control-label" for="genero">Gênero</label> <!--select-->
                         <select name="genero" id="genero" class="form-control form-control-alternative" required>
-                        <option value="F">Fêmea</option>
-                        <option value="M">Macho</option>
-                        <option value="N/A">Não Identificado</option>
+                            <option value="F">Fêmea</option>
+                            <option value="M">Macho</option>
+                            <option value="N/A">Não Identificado</option>
                         </select>
                     </div>
                 </div>
                 <div class="col-lg-6">
                     <div class="form-group">
-                      <label class="form-control-label" for="nasc">Data de Nascimento</label>
-                      <input type="date" id="nasc" name="nasc" class="form-control form-control-alternative">
+                        <label class="form-control-label" for="nasc" max="{{ today.isoformat() }}">Data de
+                            Nascimento</label>
+                        <input type="date" id="nasc" name="nasc" class="form-control form-control-alternative">
                     </div>
                 </div>
                 <div class="col-lg-6">
                     <div class="form-group">
-                    <label class="form-control-label" >Status</label>
-                        <div class="form-control form-control-alternative" style="display: flex; flex-direction: row; gap: 30px;">
+                        <label class="form-control-label">Status</label>
+                        <div class="form-control form-control-alternative"
+                            style="display: flex; flex-direction: row; gap: 30px;">
                             <div><input type="radio" name="status" id="ativado" value="Ativado">
-                                <label for="ativado">Ativado</label></div>
+                                <label for="ativado">Ativado</label>
+                            </div>
                             <div>
                                 <input type="radio" name="status" id="desativado" value="Desativado">
                                 <label for="desativado">Desativado</label><br>
@@ -138,16 +221,103 @@ fav
                         </div>
                     </div>
                 </div>
-              </div>
             </div>
-            <hr class="my-4">
-            <!-- Description -->
-            <h6 class="heading-small text-muted mb-4">Descrição</h6>
-            <div class="pl-lg-4">
-              <div class="form-group focused">
+        </div>
+        <hr class="my-4">
+        <!-- Description -->
+        <h6 class="heading-small text-muted mb-4">Descrição</h6>
+        <div class="pl-lg-4">
+            <div class="form-group focused">
                 <label>Descrição</label>
-                <textarea rows="4" id="desc" name="desc" class="form-control form-control-alternative" placeholder="Sobre o Animal..."></textarea>
-              </div>
+                <textarea rows="4" id="desc" name="desc" class="form-control form-control-alternative"
+                    placeholder="Sobre o Animal..." maxlength="500"></textarea>
             </div>
-    <br><br><br><br><br><br><br><br><br><br>
+        </div>
+        <label for="imageInput" class="btn btn-sm btn-primary">Selecionar Imagens</label>
+        <input type="file" name="fotos" id="imageInput" multiple>
+        <div class="image-container" id="imageContainer"></div>
+</form>
+<script>
+    const imageInput = document.getElementById('imageInput');
+    const imageContainer = document.getElementById('imageContainer');
+    let images = [];
+    let draggedIndex = null; // Índice da imagem sendo arrastada
+
+    imageInput.addEventListener('change', (event) => {
+        const files = Array.from(event.target.files);
+
+        files.forEach((file) => {
+            const reader = new FileReader();
+            reader.onload = (e) => {
+                images.push(e.target.result);
+                renderImages();
+            };
+            reader.readAsDataURL(file);
+        });
+    });
+
+    function renderImages() {
+        imageContainer.innerHTML = ''; // Limpar o contêiner
+        images.forEach((image, index) => {
+            const imageItem = document.createElement('div');
+            imageItem.classList.add('image-item');
+            imageItem.setAttribute('draggable', true);
+
+            const img = document.createElement('img');
+            img.src = image;
+
+            const controls = document.createElement('div');
+            controls.classList.add('controls');
+
+            const deleteBtn = document.createElement('button');
+            deleteBtn.textContent = 'X';
+            deleteBtn.classList.add('control-btn', 'delete-btn');
+            deleteBtn.title = "Excluir imagem";
+            deleteBtn.addEventListener('click', () => deleteImage(index));
+
+            const dragBtn = document.createElement('button');
+            dragBtn.textContent = '☰';
+            dragBtn.classList.add('control-btn', 'drag-btn');
+            dragBtn.title = "Arrastar imagem";
+
+            controls.appendChild(dragBtn);
+            controls.appendChild(deleteBtn);
+
+            imageItem.appendChild(img);
+            imageItem.appendChild(controls);
+            imageContainer.appendChild(imageItem);
+
+            imageItem.addEventListener('dragstart', () => handleDragStart(index, imageItem));
+            imageItem.addEventListener('dragover', (e) => e.preventDefault());
+            imageItem.addEventListener('drop', () => handleDrop(index));
+            imageItem.addEventListener('dragend', () => handleDragEnd(imageItem));
+        });
+    }
+
+    function deleteImage(index) {
+        images.splice(index, 1);
+        renderImages();
+    }
+    // Iniciar o arraste
+    function handleDragStart(index, imageItem) {
+        draggedIndex = index;
+        imageItem.classList.add('dragging');
+    }
+    // Concluir o arraste
+    function handleDrop(targetIndex) {
+        if (draggedIndex === null) return;
+
+        const draggedImage = images[draggedIndex];
+        images.splice(draggedIndex, 1); // Remover a imagem arrastada
+        images.splice(targetIndex, 0, draggedImage); // Inserir na nova posição
+
+        renderImages();
+    }
+    // Finalizar a interação
+    function handleDragEnd(imageItem) {
+        imageItem.classList.remove('dragging');
+        draggedIndex = null;
+    }
+</script>
+<br><br><br><br><br><br><br><br><br><br>
 {% endblock %}

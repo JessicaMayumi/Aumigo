@@ -1,20 +1,26 @@
-from Animal import *
+from PostDAO import PostDAO
 from ConnectionFactory import *
 from time import sleep
-from UsuarioDAO import *
+from UsuarioDAO import UsuarioDAO
 from Usuario import *
+from Animal import *
 
 from pymongo import MongoClient
 from bson.objectid import ObjectId
+from bson import ObjectId
 
 class AnimalDAO:
     def __init__(self):
-        # Conectar ao MongoDB
         self.collection = db["Animais"]
+        self.collection_users = db["Usuarios"]
+        self.fs = gridfs.GridFS(db) 
 
     def buscaAnimal(self, animalID):
         try:
-            query = {"animalID": animalID}
+            if isinstance(animalID, str):
+                animalID = ObjectId(animalID)
+            
+            query = {"_id": animalID}
             dados = self.collection.find_one(query)
             if dados:
                 return Animal(
@@ -35,12 +41,10 @@ class AnimalDAO:
 
     def buscaAnimais(self, parametro):
         try:
-            # Converte cada ID da lista para ObjectId *NAO ENTENDI*
             object_ids = []
             for animal_id in parametro:
                 object_ids.append(ObjectId(animal_id))
             
-            # Faz a busca no banco de dados usando os ObjectId *NAO ENTENDI*
             query = {"_id": {"$in": object_ids}}
             dados = self.collection.find(query)
             animais = []
@@ -63,12 +67,13 @@ class AnimalDAO:
 
     def buscaAnimaisPorUsuario(self, email):    
         try:
+            usuarioDAO = UsuarioDAO()
             usuario = usuarioDAO.buscaUsuarioPorEmail(email)
             print("Usuário encontrado:", usuario)
 
             if usuario:
-                print("Animais do usuário:", usuario.animais)  # Para verificar a lista de animais
-                if usuario.animais:  # Verifica se a lista de animais não está vazia
+                print("Animais do usuário:", usuario.animais)  
+                if usuario.animais:  
                     animalIDs = usuario.animais
                     print(f"IDs dos animais: {animalIDs}")
                     return self.buscaAnimais(animalIDs)
@@ -98,7 +103,7 @@ class AnimalDAO:
 
     def insereAnimal(self, animal, email):
         try:
-            # Inserindo o animal na coleção de animais
+           
             dados = {
                 "nome": animal.nome,
                 "tipo": animal.tipo,
@@ -107,32 +112,49 @@ class AnimalDAO:
                 "nasc": animal.nasc,
                 "desc": animal.desc,
                 "status": animal.status,
-                "foto" : animal.foto
+                "foto": [self.fs.put(f.read(), filename=f.filename) for f in animal.foto] if animal.foto else []
+                # "dataCriacao": datetime.datetime.utcnow()
             }
+            print("\033[31mDados do animal a serem inseridos:\033[0;0m", dados)
+
             result = self.collection.insert_one(dados)
-            animal_id = result.inserted_id
-            
-            if animal_id:
+            animalId = result.inserted_id
+            print("\033[31mID do animal inserido:\033[0;0m", animalId)
+
+            if animalId:
                 usuarioDAO = UsuarioDAO()
                 usuario = usuarioDAO.buscaUsuarioPorEmail(email)
-                
+                print("\033[31mUsuário encontrado:\033[0;0m", usuario)
+
                 if usuario:
-                    usuario.animais.append(str(animal_id))
-                    
-                    if usuarioDAO.alteraUsuario(usuario):
-                        print(f"Animal {animal_id} adicionado ao usuário {email}.")
+                    query = {"_id": ObjectId(usuario.usuarioID)}
+                    novos_dados = {
+                        "$push": {
+                            "animais": {
+                                "$each": [str(animalId)],
+                                "$position": 0
+                            }
+                        }
+                    }
+                    print("\033[31mAnimais atualizados:\033[0;0m", usuario.animais)
+
+                    result = usuarioDAO.collection.update_one(query, novos_dados)
+                    if result.modified_count > 0:
+                        print(f"\033[32mAnimal {animalId} adicionado ao usuário {email}.\033[0;0m")
                         return True
                     else:
-                        print(f"Erro ao atualizar o usuário {email}.")
+                        print(f"\033[31mErro ao atualizar o usuário {email}.\033[0;0m")
                         return False
                 else:
-                    print(f"Usuário {email} não encontrado.")
+                    print(f"\033[31mUsuário {email} não encontrado.\033[0;0m")
                     return False
             else:
                 return False
         except Exception as err:
-            print(f"Erro ao inserir animal: {err}")
+            print(f"\033[31mErro ao inserir animal: {err}\033[0;0m")
             return False
+
+
 
     def alteraAnimal(self, animal):
         try:
@@ -154,13 +176,68 @@ class AnimalDAO:
         except Exception as err:
             print(f"Erro ao alterar animal: {err}")
 
-    def apagarAnimal(self, animal):
+
+
+    def apagarAnimal(self, animal_id):
         try:
-            query = {"animalID": animal.animalID}
+            animal_id_object = ObjectId(animal_id)
+
+            print(f"Removendo animal com id {animal_id_object} da coleção de animais.")
+            query = {"_id": animal_id_object}
             result = self.collection.delete_one(query)
-            return result.deleted_count > 0
+
+            if result.deleted_count > 0:
+                print(f"Animal {animal_id} removido do banco de dados.")
+            else:
+                print(f"Falha ao remover o animal {animal_id}.")
+
+            usuario_query = {"animais": {"$in": [ObjectId(animal_id), animal_id]}}
+            usuario = self.collection_users.find_one(usuario_query)
+            print(f"Consulta para buscar usuário com animal {animal_id}: {usuario_query}")
+            
+            if usuario:
+                print(f"Dados do usuário encontrado: {usuario}")
+
+                if "animais" in usuario:
+                    print(f"Lista de animais do usuário antes da remoção: {usuario['animais']}")
+
+                    lista_animais_objectid = [ObjectId(a) if isinstance(a, str) else a for a in usuario['animais']]
+                    print(f"Lista de animais após conversão para ObjectId: {lista_animais_objectid}")
+
+                    if animal_id_object in lista_animais_objectid:
+                        usuario['animais'].remove(str(animal_id_object)) 
+                        
+                        print(f"Animal {animal_id_object} removido da lista de animais.")
+
+                        update_result = self.collection_users.update_one(
+                            {"_id": usuario["_id"]},
+                            {"$set": {"animais": usuario["animais"]}}
+                        )
+                        print(f"Resultado da atualização: {update_result.modified_count} documentos modificados.")
+
+                        usuario_atualizado = self.collection_users.find_one({"_id": usuario["_id"]})
+                        print(f"Dados do usuário após atualização: {usuario_atualizado}")
+
+                        return True
+                    else:
+                        print(f"Animal {animal_id_object} não encontrado na lista de animais do usuário.")
+                        return False
+                else:
+                    print("A chave 'animais' não encontrada no usuário.")
+                    return False
+            else:
+                print(f"Animal {animal_id} removido, mas não encontrado em nenhum usuário.")
+                return True
+
         except Exception as err:
-            print(f"Erro ao apagar usanimal: {err}")
+            print(f"Erro ao apagar animal: {err}")
+            return False
+
+
+
+
+
+
 
 # Exemplo de uso
 
@@ -188,3 +265,46 @@ print("aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa")
 print(usuario_test.animais)  # Deve imprimir a lista de animais
 #   ESTÁ FUNCIONANDO!
 '''
+
+'''    def apagarAnimal(self, animal_id):
+        try:
+            # Remover o animal da coleção de animais usando animal_id
+            query = {"_id": ObjectId(animal_id)}  # Convertendo animal_id para ObjectId
+            result = self.collection.delete_one(query)
+
+            if result.deleted_count > 0:
+                # Buscar o usuário que possui este animal
+                usuario_query = {"animais": animal_id}  # Usando diretamente animal_id
+                usuario = self.collection_users.find_one(usuario_query)
+                animal_index = usuario["animais"].index(animal_id)
+
+                if usuario:
+                    # Atualizar a lista de animais do usuário
+                    usuario_obj = Usuario(
+                        nome=usuario["nome"],
+                        email=usuario["email"],
+                        senha=usuario["senha"],
+                        verificarUser=usuario["verificarUser"],
+                        imgPerfil=usuario.get("imgPerfil"),
+                        desc=usuario.get("desc", ""),
+                        animais=usuario["animais"].remove(animal_index)  # Removendo o animal pelo ID
+                    )
+
+                    if self.alteraUsuario(usuario_obj):
+                        print(f"Animal {animal_id} removido do banco e atualizado no usuário {usuario_obj.usuarioID}.")
+                        return True
+                    else:
+                        print(f"Erro ao atualizar o usuário {usuario_obj.usuarioID} ao remover o animal {animal_id}.")
+                        return False
+                else:
+                    print(f"Animal {animal_id} removido, mas não encontrado em nenhum usuário.")
+                    return True
+            else:
+                print("Nenhum animal encontrado para remover.")
+                return False
+
+        except Exception as err:
+            print(f"Erro ao apagar animal: {err}")
+            return False'''
+
+

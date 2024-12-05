@@ -1,7 +1,6 @@
 from pymongo import MongoClient
 import gridfs
 
-# Substitua a string abaixo com a sua string de conexão
 client = MongoClient("mongodb+srv://AUMIGO:MAY@aumigo.ziyhr.mongodb.net/?authMechanism=SCRAM-SHA-1&ssl=true")
 
 # Acessando o banco de dados

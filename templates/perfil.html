@@ -76,7 +76,7 @@
   }
 
     .li-animais {
-      border: solid black 3px; 
+      border: solid #3d3776 3px; 
       border-radius: 30px; 
       height: 300px; 
       width: 300px;
@@ -131,14 +131,14 @@
       }
     }
 
-  .titulo-animais{
+  .titulo{
     display: flex;
     flex-direction: row;
     padding: 20px;
     align-items: center;
   }
 
-  .titulo-animais::after {
+  .titulo::after {
     content: "";
     flex-grow: 1; 
     height: 2px;
@@ -146,6 +146,30 @@
     opacity: .3;
     margin-left: 10px;
   }
+  table {
+        width: 80%;
+        margin: 20px auto;
+        border-collapse: collapse;
+    }
+
+    th, td {
+        padding: 12px;
+        text-align: center;
+        border-bottom: 1px solid #ddd;
+    }
+
+    th {
+        background-color: #f8f9fa;
+    }
+
+    tr:hover {
+        background-color: #f1f1f1;
+    }
+
+    .btn-excluir {
+        background-color: #dc3545;
+        color: #fff;
+    }
 
 </style>
 <link href="static/css/perfil.css" rel="stylesheet"> 
@@ -212,7 +236,18 @@ dados aqui
             {% if imgPerfil_url %}
                   <input type="file" id="file" name="file" accept="image/*" style="display: none;" name="imgPerfil">
                   <label for="file" id="imageLabel">
-                      <img id="imageDisplay" alt="Imagem carregada aparecerá aqui." style="width: 150px; cursor: pointer;" src="{{imgPerfil_url}}">
+                    <img 
+                      id="imageDisplay" 
+                      alt="Imagem carregada aparecerá aqui." 
+                      style="
+                        height: 150px; 
+                        cursor: pointer; 
+                        width: 150px; /* Garante que a largura seja igual à altura */
+                        object-fit: cover; /* Mantém o aspect ratio sem distorção */
+                        overflow: hidden; /* Para segurança, no caso de elementos visíveis fora */
+                      " 
+                      src="{{imgPerfil_url}}"
+                    >
                   </label>
                 {% else %}
                   <div>
@@ -230,32 +265,30 @@ dados aqui
         <div class="col">
           <div class="card-profile-stats d-flex justify-content-center mt-md-5">
             <div>
-              <span class="heading">22</span>
-              <span class="description">Friends</span>
+              <span class="heading">{{usuario.animais|length}}</span>
+              <span class="description">Animais</span>
             </div>
             <div>
-              <span class="heading">10</span>
-              <span class="description">Photos</span>
+              <span class="heading">{{usuario.posts|length}}</span>
+              <span class="description">Salvos</span>
             </div>
             <div>
-              <span class="heading">89</span>
-              <span class="description">Comments</span>
+              <span class="heading">{{usuario.posts|length}}</span>
+              <span class="description">Publicados</span>
             </div>
           </div>
         </div>
       </div>
       <div class="text-center">
         <h3>
-        {{usuario.nome}}<span class="font-weight-light">, 27</span>
+        {{usuario.nome}}<span class="font-weight-light"></span>
         </h3>
         <div class="h5 font-weight-300">
-          <i class="ni location_pin mr-2"></i>Bucharest, Romania
+          <i class="ni location_pin mr-2"></i>
         </div>
-        <div class="h5 mt-4">
-          <i class="ni business_briefcase-24 mr-2"></i>Solution Manager - Creative Tim Officer
-        </div>
+   
         <div>
-          <i class="ni education_hat mr-2"></i>University of Computer Science
+          <i class="ni education_hat mr-2"></i>Brazil
         </div>
         <hr class="my-4">
         <p>{{usuario.desc}}</p>
@@ -291,7 +324,7 @@ dados aqui
         <div class="pl-lg-4">
             <div class="form-group focused">
                 <label>Sobre mim</label>
-                <textarea rows="4" name="desc" class="form-control form-control-alternative" placeholder="A few words about you ...">{{usuario.desc}}</textarea>
+                <textarea rows="4" name="desc" class="form-control form-control-alternative" placeholder="Descrição">{{usuario.desc}}</textarea>
             </div>
         </div>
       <div class="button-container">
@@ -411,34 +444,93 @@ dados aqui
       const reader = new FileReader();
 
       reader.onload = function(e) {
-          imageDisplay.src = e.target.result;  // Atualiza a imagem exibida
+          imageDisplay.src = e.target.result; //Atualiza a imagem exibida
       };
 
       if (file) {
-          reader.readAsDataURL(file);  // Lê a imagem selecionada como URL de dados
+          reader.readAsDataURL(file); //Lê a imagem selecionada como URL de dados
       }
   });
 </script>
 
 
 
-<div class="titulo-animais"><h2>Animais Adicionados</h2></div>
+<div class="titulo"><h2>Animais Adicionados</h2></div>
 <br>
-<a href="{{ url_for('addAnimal') }}" class="btn btn-sm btn-primary" style="margin: 10%;">Adicionar Animal</a>
+<a href="{{ url_for('addAnimal') }}" class="btn btn-sm btn-primary" style="margin: 20px; margin-left: 110px;">Adicionar Animal</a>
 <ul class="ul-animais">
     {% for animal in animais %}
         <li class="li-animais">
-            <div style="height: 200px; width: 200px; background-color: blanchedalmond;">
-              <p style="text-align: center;">Foto</p>
+            <div style="height: 200px; width: 200px; background-color: blanchedalmond; overflow: hidden;">
+              {% if animal.foto %}
+                <img src="{{ url_for('image', image_id=animal.foto[0]) }}" alt="Imagem do Animal" style="height: 200px; position: relative;   transform: translate(-50%, -50%);  left: 50%;  top: 50%;">
+              {% else %}
+                <p>Imagem não disponível</p>
+              {% endif %}
             </div>
             <strong>{{ animal.nome }}</strong> - {{ animal.desc }}
             <form action="{{ url_for('deletar_animal', animal_id=animal.animalID) }}" method="POST" style="display:inline;">
-                <button type="submit">Deletar</button>
+                <button type="submit" class="btn btn-sm btn-danger" style="color: white !important;">Deletar</button>
             </form>
         </li>
     {% else %}
     <li>Nenhum animal cadastrado.</li>
     {% endfor %}
 </ul>
+<br><br><br><br><br>
+
+<div class="titulo"><h2>Blog</h2></div>
+<br>
+<a href="{{ url_for('addPost') }}" class="btn btn-sm btn-primary" style="margin: 20px; margin-left: 110px;">Adicionar Post</a>
+<div>
+  <ul class="ul-animais" >
+    {% for post in posts %} 
+        <li class="li-animais" style="height: 200px !important;">
+            <div style="height: 100px; width: 200px; overflow: hidden;">
+              <p style="text-align: center;"><b> Título: {{ post.titulo}}</b></p>
+              <p style="text-align: center;"><b>{{ post.dataCriacao }}</b></p>
+            </div>
+            <form action="{{ url_for('apagar_post', post_id=post['_id']) }}" method="POST" style="display:inline;">
+              <br>
+                <button type="submit"  class="btn btn-sm btn-danger" style="color: white !important;">Apagar</button>
+            </form>
+        </li>
+    {% else %}
+        <li>Nenhum post cadastrado.</li>
+    {% endfor %}
+</ul>
+
+</div>
+
+{% if administrador == "A" %}
+
+
+<div class="titulo"><h2>Lista de Usuários</h2></div>
+<table class="table table-striped">
+    <thead>
+        <tr>
+            <th>Nome</th>
+            <th>Email</th>
+            <th>Status</th>
+            <th>Ações</th>
+        </tr>
+    </thead>
+    <tbody>
+        {% for item in usuarios %}
+            <tr>
+                <td>{{ item.nome }}</td>
+                <td>{{ item.email }}</td>
+                <td>{{ item.verificarUser }}</td>
+                <td>
+                  {% if item.verificarUser == "N" %}
+                    <a href="{{ url_for('apagar_usuario', user_id=item.usuarioID) }}" class="btn btn-excluir">Excluir</a>
+                  {% endif %}
+                </td>
+            </tr>
+        {% endfor %}
+    </tbody>
+</table>
+{% endif %}
+<br><br><br><br><br>
 
 {% endblock %}

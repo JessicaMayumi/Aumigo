@@ -1,0 +1,312 @@
+{% extends "template.html" %}
+
+{% block css%}
+<style> 
+    .mensagem {
+        position: fixed;
+        top: 20px;
+        left: 50%;
+        transform: translateX(-50%);
+        padding: 10px;
+        border-radius: 5px;
+        color: #fff;
+        font-size: 14px;
+        z-index: 1000;
+        display: none;
+    }
+    .mensagem-sucesso {
+        background-color: #28a745; /* Verde para sucesso */
+    }
+    .mensagem-erro {
+        background-color: #dc3545; /* Vermelho para erro */
+    }
+
+    .editor-container {
+        max-width: 100%;
+        margin: 0 auto;
+        background: #fff;
+        border: 1px solid #ddd;
+        border-radius: 5px;
+        padding: 20px;
+    }
+    .editor-header {
+        margin-bottom: 15px;
+    }
+    .editor-header input {
+        width: 100%;
+        padding: 10px;
+        font-size: 18px;
+        border: 1px solid #ddd;
+        border-radius: 4px;
+    }
+    .toolbar {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 5px;
+        margin-bottom: 10px;
+    }
+    .toolbar button {
+        padding: 8px 12px;
+        border: 1px solid #ddd;
+        background: #f4f4f4;
+        border-radius: 4px;
+        cursor: pointer;
+    }
+    .toolbar button:hover {
+        background: #e0e0e0;
+    }
+    .toolbar input[type="color"] {
+        border: none;
+        padding: 3px;
+        cursor: pointer;
+        width: 35px;
+        height: 35px;
+        border-radius: 4px;
+    }
+    .editor-body {
+        border: 1px solid #ddd;
+        border-radius: 4px;
+        min-height: 300px;
+        padding: 10px;
+        background: #fff;
+    }
+
+    #post-content {
+        height: 300px; /* Altura fixa para a área de edição */
+        max-height: 300px; /* Impede que a altura ultrapasse o limite */
+        overflow-y: auto; /* Barra de rolagem vertical */
+        width: 100%; /* Largura completa */
+        padding: 10px; /* Espaçamento interno */
+        font-family: Arial, sans-serif;
+        font-size: 14px;
+    }
+
+</style>
+
+<link href="static/css/perfil.css" rel="stylesheet"> 
+
+{% endblock %}
+
+
+{% block titulo %} AUMIGO - BLOG {% endblock %}
+
+{% block mainTitulo %}
+fav
+{% endblock %}
+
+{% with mensagens = get_flashed_messages(with_categories=True) %}
+    {% if mensagens %}
+        <div id="container-mensagem">   
+            {% for categoria, mensagem in mensagens %}
+                <div class="mensagem mensagem-{{ categoria }}">
+                    {{ mensagem }}
+                </div>
+            {% endfor %}
+        </div>
+        <script>
+            document.addEventListener("DOMContentLoaded", function() {
+                var mensagens = document.querySelectorAll(".mensagem");
+                mensagens.forEach(function(mensagem) {
+                    // Mostra a mensagem
+                    mensagem.style.display = "block";
+                    mensagem.style.opacity = 1; // Inicialmente, a mensagem é visível
+
+                    // Faz a mensagem desaparecer depois de um tempo
+                    setTimeout(function() {
+                        mensagem.style.opacity = 0; // Faz a mensagem desaparecer
+                        setTimeout(function() {
+                            mensagem.style.display = "none"; // Oculta a mensagem completamente
+                        }, 500); // Tempo de transição
+                    }, 3000); // Tempo que a mensagem ficará visível
+                });
+            });
+        </script>
+    {% endif %}
+{% endwith %}
+
+
+{% block main %}
+
+<!-- Start Hero Section -->
+<div class="hero">
+    <div class="container">
+        <div class="row justify-content-between">
+            <div class="col-lg-5">
+                <div class="intro-excerpt">
+                    <h1>Adicionar Nova Publicação</h1>
+                </div>
+            </div>
+    
+            <div class="col-lg-7">
+                <div>
+
+                  </div>
+            </div>
+        </div>
+    </div>
+</div>
+<br>
+<!-- End Hero Section -->
+
+<form method="POST" enctype="multipart/form-data" id="postForm">
+    <button onclick="saveContent(event, 'id_do_post_existente')">Editar Post</button>
+</form>
+
+<div class="card-body">
+    <h6 class="heading-small text-muted mb-4">Editar Publicação</h6>
+    <div class="pl-lg-4">
+      <div class="row">
+        <div class="col-lg-6">
+            <div class="form-group">
+            <label class="form-control-label" >Status</label>
+                <div class="form-control form-control-alternative" style="display: flex; flex-direction: row; gap: 30px;">
+                    <div><input type="radio" name="status" id="ativado" value="Ativado">
+                        <label for="ativado">Ativado</label>
+                    </div>
+                    <div>
+                        <input type="radio" name="status" id="desativado" value="Desativado">
+                        <label for="desativado">Desativado</label><br>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <div class="col-lg-6">
+            <div class="form-group">
+            <label class="form-control-label" >Visibilidade</label>
+                <div class="form-control form-control-alternative" style="display: flex; flex-direction: row; gap: 30px;">
+                    <div><input type="radio" name="visibilidade" id="publico" value="Publico">
+                        <label for="publico">Público</label>
+                    </div>
+                    <div>
+                        <input type="radio" name="visibilidade" id="privado" value="Privado">
+                        <label for="privado">Privado</label><br>
+                    </div>
+                </div>
+            </div>
+        </div>
+      </div>
+    </div>
+    <hr class="my-4">
+    <!-- Description -->
+    <div class="editor-container">
+        <!-- Campo de título -->
+
+        <div class="">
+            <div class="form-group focused">
+              <input type="text" id="input-username" name="titulo" class="form-control form-control-alternative" placeholder="Título" value="" required>
+            </div>
+        </div>
+
+<!-- Barra de ferramentas -->
+<div class="toolbar">
+    <button onclick="applyFormatting('bold')" class="btn"><b>B</b></button>
+    <button onclick="applyFormatting('italic')" class="btn"><i>I</i></button>
+    <button onclick="applyFormatting('underline')" class="btn"><u>U</u></button>
+    <button onclick="applyFormatting('insertOrderedList')" class="btn">1.</button>
+    <button onclick="applyFormatting('insertUnorderedList')" class="btn">&#8226;</button>
+    <button onclick="applyFormatting('justifyLeft')" class="btn">Esquerda</button>
+    <button onclick="applyFormatting('justifyCenter')" class="btn">Centro</button>
+    <button onclick="applyFormatting('justifyRight')" class="btn">Direita</button>
+
+    <!-- Botão para adicionar imagem -->
+    <button onclick="addImage()" class="btn">Imagem</button>
+
+    <!-- Seletor de cor -->
+    <input type="color" id="fontColor" onchange="changeFontColor()">
+</div>
+
+<!-- Editor de texto -->
+<h6 class="heading-small text-muted mb-4">Conteúdo</h6>
+<div class="pl-lg-4">
+    <div class="form-group focused">
+        <div id="post-content" contenteditable="true" class="editor-body form-control form-control-alternative" placeholder="Escreva aqui seu conteúdo...">
+        </div>
+    </div>
+    <input type="hidden" name="conteudo" id="hidden-content">
+</div>
+</div>
+<br><br><br><br><br><br>
+<script src="static/js/editarPost.js"></script>
+<script>
+        document.querySelector("form").addEventListener("submit", function (e) {
+        // Obter o conteúdo da div
+        const content = document.getElementById("post-content").innerHTML;
+        // Atualizar o campo oculto
+        document.getElementById("hidden-content").value = content;
+        });
+
+    // Função para aplicar ou remover formatação
+    function applyFormatting(command) {
+        const selectedText = window.getSelection();
+        const range = selectedText.getRangeAt(0);
+        const currentNode = range.startContainer;
+
+        // Verifica se o estilo já está aplicado
+        const isBold = document.queryCommandState('bold');
+        const isItalic = document.queryCommandState('italic');
+        const isUnderline = document.queryCommandState('underline');
+
+        if (command === 'bold' && isBold) {
+            document.execCommand('bold', false, null);  // Remove o negrito
+        } else if (command === 'bold') {
+            document.execCommand('bold', false, null);  // Aplica o negrito
+        }
+
+        if (command === 'italic' && isItalic) {
+            document.execCommand('italic', false, null);  // Remove o itálico
+        } else if (command === 'italic') {
+            document.execCommand('italic', false, null);  // Aplica o itálico
+        }
+
+        if (command === 'underline' && isUnderline) {
+            document.execCommand('underline', false, null);  // Remove o sublinhado
+        } else if (command === 'underline') {
+            document.execCommand('underline', false, null);  // Aplica o sublinhado
+        }
+
+        if (command === 'insertOrderedList') {
+            document.execCommand('insertOrderedList', false, null);  // Aplica ou remove lista ordenada
+        }
+
+        if (command === 'insertUnorderedList') {
+            document.execCommand('insertUnorderedList', false, null);  // Aplica ou remove lista não ordenada
+        }
+
+        // Justificações
+        if (command === 'justifyLeft') {
+            document.execCommand('justifyLeft', false, null);
+        } else if (command === 'justifyCenter') {
+            document.execCommand('justifyCenter', false, null);
+        } else if (command === 'justifyRight') {
+            document.execCommand('justifyRight', false, null);
+        }
+    }
+
+    // Função para alterar a cor da fonte
+    function changeFontColor() {
+        const color = document.getElementById('fontColor').value;
+        const selectedText = window.getSelection();
+        if (selectedText.rangeCount) {
+            const range = selectedText.getRangeAt(0);
+            const wrapper = document.createElement('span');
+            wrapper.style.color = color;
+            wrapper.appendChild(range.extractContents());
+            range.insertNode(wrapper);
+        }
+    }
+
+    // Função para adicionar imagem
+    function addImage() {
+        const imageUrl = prompt("Digite o URL da imagem:");
+        if (imageUrl) {
+            const imgTag = `<img src="${imageUrl}" alt="Imagem" style="max-width: 100%; height: auto;">`;
+            const editor = document.getElementById('post-content');
+            editor.innerHTML += imgTag; // Insere a imagem diretamente no conteúdo
+        }
+    }
+</script>
+
+
+
+
+{% endblock %}

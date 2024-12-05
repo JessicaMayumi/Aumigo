@@ -20,7 +20,7 @@ institucional
                     </div>
                     <div class="col-lg-7">
                         <div class="hero-img-wrap">
-                            <img src="../static/images/couch.png" class="img-fluid">
+                            <img src="../static/images/a2.png" class="img-fluid" style="top: -85px;">
                         </div>
                     </div>
                 </div>
@@ -41,8 +41,8 @@ institucional
                         <div class="icon">
                             <img src="../static/../static/images/truck.svg" alt="Image" class="imf-fluid">
                         </div>
-                        <h3>Fast &amp; Free Shipping</h3>
-                        <p>Donec vitae odio quis nisl dapibus malesuada. Nullam ac aliquet velit. Aliquam vulputate.</p>
+                        <h3>Nossa Missão</h3>
+                        <p>Facilitamos adoções responsáveis, conectando pessoas e animais com carinho e respeito.</p>
                     </div>
                 </div>
 
@@ -51,8 +51,8 @@ institucional
                         <div class="icon">
                             <img src="../static/images/bag.svg" alt="Image" class="imf-fluid">
                         </div>
-                        <h3>Easy to Shop</h3>
-                        <p>Donec vitae odio quis nisl dapibus malesuada. Nullam ac aliquet velit. Aliquam vulputate.</p>
+                        <h3>Quem Somos</h3>
+                        <p>Somos uma plataforma dedicada a transformar a vida de animais e seus futuros donos.</p>
                     </div>
                 </div>
 
@@ -61,8 +61,8 @@ institucional
                         <div class="icon">
                             <img src="../static/images/support.svg" alt="Image" class="imf-fluid">
                         </div>
-                        <h3>24/7 Support</h3>
-                        <p>Donec vitae odio quis nisl dapibus malesuada. Nullam ac aliquet velit. Aliquam vulputate.</p>
+                        <h3>Nossos Valores</h3>
+                        <p>Valorizamos o bem-estar animal, a transparência e a criação de laços duradouros.</p>
                     </div>
                 </div>
 
@@ -71,12 +71,12 @@ institucional
                         <div class="icon">
                             <img src="../static/images/return.svg" alt="Image" class="imf-fluid">
                         </div>
-                        <h3>Hassle Free Returns</h3>
-                        <p>Donec vitae odio quis nisl dapibus malesuada. Nullam ac aliquet velit. Aliquam vulputate.</p>
+                        <h3>Blog Aumigo</h3>
+                        <p>Compartilhamos conteúdos que ajudam você a cuidar e oferecer um lar para seu pet.</p>
                     </div>
                 </div>
 
-                <div class="col-6 col-md-6 col-lg-3 mb-4">
+<!--               <div class="col-6 col-md-6 col-lg-3 mb-4">
                     <div class="feature">
                         <div class="icon">
                             <img src="../static/images/truck.svg" alt="Image" class="imf-fluid">
@@ -114,13 +114,14 @@ institucional
                         <h3>Hassle Free Returns</h3>
                         <p>Donec vitae odio quis nisl dapibus malesuada. Nullam ac aliquet velit. Aliquam vulputate.</p>
                     </div>
-                </div>
+                </div>-->
 
             </div>
         
         </div>
     </div>
     <!-- End Why Choose Us Section -->
+    {% if posts is not none and posts|length > 0 %}
 
     <!-- Start Product Section -->
     <div class="product-section pt-0">
@@ -129,18 +130,18 @@ institucional
 
                 <!-- Start Column 1 -->
                 <div class="col-md-12 col-lg-3 mb-5 mb-lg-0">
-                    <h2 class="mb-4 section-title">Crafted with excellent material.</h2>
-                    <p class="mb-4">Donec vitae odio quis nisl dapibus malesuada. Nullam ac aliquet velit. Aliquam vulputate velit imperdiet dolor tempor tristique. </p>
-                    <p><a href="#" class="btn">Explore</a></p>
+                    <h2 class="mb-4 section-title">Confira nosso Blog!</h2>
+                    <p class="mb-4">Cada um deles está esperando por um lar cheio de amor e cuidado, prontos para trazer alegria e companheirismo à sua vida. No nosso blog, você encontra dicas e histórias inspiradoras para ajudar na jornada de adoção e cuidados com seu novo amigo.</p>
+                    <p><a href="{{ url_for('blog')}}" class="btn" style="color: white;">Explore</a></p>
                 </div> 
                 <!-- End Column 1 -->
 
                 <!-- Start Column 2 -->
                 <div class="col-12 col-md-4 col-lg-3 mb-5 mb-md-0">
-                    <a class="product-item" href="#">
+                    <a class="product-item" href="{{ url_for('blog', post_id=posts[0].postID|string) }}">
                         <img src="../static/images/product-1.png" class="img-fluid product-thumbnail">
-                        <h3 class="product-title">Nordic Chair</h3>
-                        <strong class="product-price">$50.00</strong>
+                        <h3 class="product-title">{{posts[0].titulo}}</h3>
+                        <strong class="product-price">Escrito por <em>{{posts[0].autor}}</em></strong>
 
                         <span class="icon-cross">
                             <img src="../static/images/cross.svg" class="img-fluid">
@@ -151,10 +152,10 @@ institucional
 
                 <!-- Start Column 3 -->
                 <div class="col-12 col-md-4 col-lg-3 mb-5 mb-md-0">
-                    <a class="product-item" href="#">
+                    <a class="product-item" href="{{ url_for('blog', post_id=posts[1].postID|string) }}">
                         <img src="../static/images/product-2.png" class="img-fluid product-thumbnail">
-                        <h3 class="product-title">Kruzo Aero Chair</h3>
-                        <strong class="product-price">$78.00</strong>
+                        <h3 class="product-title">{{posts[1].titulo}}</h3>
+                        <strong class="product-price">Escrito por <em>{{posts[1].autor}}</em></strong>
 
                         <span class="icon-cross">
                             <img src="../static/images/cross.svg" class="img-fluid">
@@ -165,10 +166,10 @@ institucional
 
                 <!-- Start Column 4 -->
                 <div class="col-12 col-md-4 col-lg-3 mb-5 mb-md-0">
-                    <a class="product-item" href="#">
+                    <a class="product-item" href="{{ url_for('blog', post_id=posts[2].postID|string) }}">
                         <img src="../static/images/product-3.png" class="img-fluid product-thumbnail">
-                        <h3 class="product-title">Ergonomic Chair</h3>
-                        <strong class="product-price">$43.00</strong>
+                        <h3 class="product-title">{{posts[2].titulo}}</h3>
+                        <strong class="product-price">Escrito por <em>{{posts[2].autor}}</em></strong>
 
                         <span class="icon-cross">
                             <img src="../static/images/cross.svg" class="img-fluid">
@@ -182,14 +183,14 @@ institucional
     </div>
     <!-- End Product Section -->
 
-    
+    {% endif %}
 
     <!-- Start Testimonial Slider -->
-    <div class="testimonial-section before-footer-section">
+    <div class="testimonial-section before-footer-section" style="background-color: white;">
         <div class="container">
             <div class="row">
                 <div class="col-lg-7 mx-auto text-center">
-                    <h2 class="section-title">Testimonials</h2>
+                    <h2 class="section-title">Depoimentos</h2>
                 </div>
             </div>
 
@@ -210,15 +211,15 @@ institucional
 
                                         <div class="testimonial-block text-center">
                                             <blockquote class="mb-5">
-                                                <p>&ldquo;Donec facilisis quam ut purus rutrum lobortis. Donec vitae odio quis nisl dapibus malesuada. Nullam ac aliquet velit. Aliquam vulputate velit imperdiet dolor tempor tristique. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Integer convallis volutpat dui quis scelerisque.&rdquo;</p>
+                                                <p>&ldquo;Descobri o Aumigo enquanto procurava um site confiável para adotar um pet. Fiquei impressionada com a organização e o carinho da plataforma. A adoção do meu gato foi rápida e fácil, e as dicas no blog me ajudaram muito com os cuidados. Recomendo a todos que querem mudar suas vidas e oferecer um lar cheio de amor para um animal.&rdquo;</p>
                                             </blockquote>
 
                                             <div class="author-info">
                                                 <div class="author-pic">
-                                                    <img src="../static/images/person-1.png" alt="Maria Jones" class="img-fluid">
+                                                    <img src="../static/images/person_4.jpg" alt="Maria Jones" class="img-fluid">
                                                 </div>
-                                                <h3 class="font-weight-bold">Maria Jones</h3>
-                                                <span class="position d-block mb-3">CEO, Co-Founder, XYZ Inc.</span>
+                                                <h3 class="font-weight-bold">Ana Beatriz</h3>
+                                                <span class="position d-block mb-3">Professora</span>
                                             </div>
                                         </div>
 
@@ -233,15 +234,15 @@ institucional
 
                                         <div class="testimonial-block text-center">
                                             <blockquote class="mb-5">
-                                                <p>&ldquo;Donec facilisis quam ut purus rutrum lobortis. Donec vitae odio quis nisl dapibus malesuada. Nullam ac aliquet velit. Aliquam vulputate velit imperdiet dolor tempor tristique. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Integer convallis volutpat dui quis scelerisque.&rdquo;</p>
+                                                <p>&ldquo;O Aumigo foi uma das melhores descobertas que fiz na internet. A experiência de adotar meu cachorro através da plataforma foi incrivelmente tranquila. Além disso, o blog trouxe informações valiosas que me guiaram nos primeiros meses com ele. É incrível saber que existem iniciativas tão humanas e bem organizadas. Adotar um pet nunca foi tão especial e emocionante.&rdquo;</p>
                                             </blockquote>
 
                                             <div class="author-info">
                                                 <div class="author-pic">
-                                                    <img src="../static/images/person-1.png" alt="Maria Jones" class="img-fluid">
+                                                    <img src="../static/images/person_3.jpg" alt="Maria Jones" class="img-fluid">
                                                 </div>
-                                                <h3 class="font-weight-bold">Maria Jones</h3>
-                                                <span class="position d-block mb-3">CEO, Co-Founder, XYZ Inc.</span>
+                                                <h3 class="font-weight-bold">Lucas Ferreira</h3>
+                                                <span class="position d-block mb-3">Desenvolvedor de Software</span>
                                             </div>
                                         </div>
 
@@ -256,15 +257,15 @@ institucional
 
                                         <div class="testimonial-block text-center">
                                             <blockquote class="mb-5">
-                                                <p>&ldquo;Donec facilisis quam ut purus rutrum lobortis. Donec vitae odio quis nisl dapibus malesuada. Nullam ac aliquet velit. Aliquam vulputate velit imperdiet dolor tempor tristique. Pellentesque habitant morbi tristique senectus et netus et malesuada fames ac turpis egestas. Integer convallis volutpat dui quis scelerisque.&rdquo;</p>
+                                                <p>&ldquo;Adotar pelo Aumigo foi muito mais do que uma simples decisão, foi um momento transformador. O site é super intuitivo, e o blog traz conteúdos fantásticos sobre adoção responsável. Foi incrível acompanhar histórias de outros adotantes e, enfim, encontrar o meu novo amigo. Sou extremamente grata por essa experiência única e pela oportunidade de trazer alegria para minha vida.&rdquo;</p>
                                             </blockquote>
 
                                             <div class="author-info">
                                                 <div class="author-pic">
                                                     <img src="../static/images/person-1.png" alt="Maria Jones" class="img-fluid">
                                                 </div>
-                                                <h3 class="font-weight-bold">Maria Jones</h3>
-                                                <span class="position d-block mb-3">CEO, Co-Founder, XYZ Inc.</span>
+                                                <h3 class="font-weight-bold">Mariana Oliveira</h3>
+                                                <span class="position d-block mb-3">Médica Veterinária</span>
                                             </div>
                                         </div>
 

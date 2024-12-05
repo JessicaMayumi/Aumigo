@@ -13,7 +13,7 @@
         flex-direction: column;
         align-items: center;
         justify-content: center;
-        background-color: gray;
+        background-color: none;
     }
 
     .ul-animais {
@@ -30,7 +30,45 @@
         align-items: center;
         justify-content: space-around;
     }
+
+.animal-card {
+    cursor: pointer;
+    background-color: #ffffff;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+    padding: 15px;
+    margin-bottom: 20px;
+    transition: transform 0.2s ease;
+}
+.animal-card:hover {
+    transform: scale(1.02);
+}
+.animal-img {
+    width: 100%;
+    height: 200px;
+    object-fit: cover;
+    border-radius: 10px;
+    margin-bottom: 10px;
+}
+.modal-header {
+    background-color: #4a4a8a;
+    color: white;
+}
+.adopt-btn {
+    background-color: #4a4a8a;
+    color: white;
+}
+    .carousel-item img {
+    height: 200px;   /* Define a altura fixa */
+    width: 200px;    /* Define a largura fixa */
+    object-fit: cover; /* Garante que a imagem cubra completamente a área do contêiner, sem distorcer */
+}
+
+.img-fluid {
+    
+}
 </style>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/css/bootstrap.min.css" rel="stylesheet">
 {% endblock %}
 
 {% block mainTitulo %}
@@ -43,14 +81,22 @@
                 <div class="row justify-content-between">
                     <div class="col-lg-5">
                         <div class="intro-excerpt">
-                            <h1>{{tipo}}</h1>
-                            <p class="mb-4">Bem-vindo ao nosso blog! Aqui você encontrará artigos, dicas e novidades sobre Pets. Fique à vontade para explorar e deixar seus comentários – sua opinião é muito importante para nós!</p>
+                            <h1 style="text-transform: uppercase;">{{tipo}}</h1>
+                            <p class="mb-4">Descubra a infinidade de "Aumigos" disponíveis em nossa página! Aqui, você encontrará uma variedade incrível de animais adoráveis, esperando por um lar cheio de amor. Venha explorar e quem sabe, encontrar o seu novo melhor amigo!</p>
                             <!--<p><a href="" class="btn btn-secondary me-2">Shop Now</a><a href="#" class="btn btn-white-outline">Explore</a></p>-->
                         </div>
                     </div>
                     <div class="col-lg-7">
                         <div class="hero-img-wrap">
-                            <img src="{{ url_for('static', filename = 'images/couch.png') }}" class="img-fluid">
+                            {% if tipo == "cachorro" %}
+                                <img src="{{ url_for('static', filename = 'images/cachorro.png') }}" class="img-fluid">
+                            {% elif tipo == "gato" %}
+                                <img src="{{ url_for('static', filename = 'images/gato.png') }}" class="img-fluid">
+                            {% elif tipo == "coelho" %}
+                                <img src="{{ url_for('static', filename = 'images/coelhos.png') }}" class="img-fluid">
+                            {% else %}
+                                <img src="{{ url_for('static', filename = 'images/outros.png') }}" class="img-fluid">
+                            {% endif %}
                         </div>
                     </div>
                 </div>
@@ -63,23 +109,84 @@
     <!-- Start Animal Section -->
 
     <div class="backToHome">
-        <a href="{{ url_for('animais') }}">
+        <a href="{{ url_for('animais') }}" >
             <svg xmlns="http://www.w3.org/2000/svg" width="2em" height="2em" viewBox="0 0 24 24">
                 <path fill="#7c78d0" d="M12 9.059V6.5a1.001 1.001 0 0 0-1.707-.708L4 12l6.293 6.207a.997.997 0 0 0 1.414 0A.999.999 0 0 0 12 17.5v-2.489c2.75.068 5.755.566 8 3.989v-1c0-4.633-3.5-8.443-8-8.941"/>
             </svg>
         </a>
     </div>
     
-
-    <ul class="ul-animais ">
-        {% for animal in animais %}
-            <li class="li-animais">
-                <a href="{{ url_for('animais', tipo=animal.tipo , nome=animal.nome) }}">
-                <div style="height: 200px; width: 200px;">
-                Foto
-                </div>
-                <strong>{{ animal.nome }}</strong> - {{ animal.tipo }}</a>
+    <div class="container mt-4">
+        <h1 class="text-center mb-4" style="color: #3d3776;">Lista de Animais</h1>
+        <ul class="list-unstyled">
+            {% for animal in animais %}
+            <li class="animal-card mb-3 p-3 border rounded shadow-sm" style="cursor: pointer;">
+                <!-- Link para o Modal -->
+                <a href="#" data-bs-toggle="modal" data-bs-target="#modal-{{ animal['_id'] }}" style="display: flex; flex-direction: row; align-items: center; gap: 30px; text-decoration: none; color:#3d3776 ;">
+                    <div style="height: 200px; width: 200px; background-color: blanchedalmond; overflow: hidden; position: relative;">
+                        {% if animal.foto %}
+                            <img src="{{ url_for('image', image_id=animal.foto[0]) }}" alt="Imagem do Animal" style="height: 100%; object-fit: cover; position: relative;   transform: translate(-50%, -50%);  left: 50%;  top: 50%;">
+                        {% else %}
+                            <p>Imagem não disponível</p>
+                        {% endif %}
+                    </div>
+                    <div style="display: flex; flex-direction: column;">   
+                    <strong>{{ animal.nome }}</strong>
+                    <p>{{ animal.tipo }}</p>
+                    <p>{{ animal.raca }}</p>
+                    <p>{{ animal.desc }}</p> 
+                    </div>
+                </a>
             </li>
-        {% endfor %}
-    </ul>
+    
+            <!-- Modal para cada animal -->
+            <div class="modal fade" id="modal-{{ animal['_id'] }}" tabindex="-1" aria-labelledby="modalLabel-{{ animal['_id'] }}" aria-hidden="true">
+                <div class="modal-dialog modal-dialog-centered">
+                    <div class="modal-content">
+                        <div class="modal-header">
+                            <h5 class="modal-title" id="modalLabel-{{ animal['_id'] }}">Detalhes de {{ animal.nome }}</h5>
+                            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                        </div>
+                        <div class="modal-body">
+                            <div id="carousel-{{ animal['_id'] }}" class="carousel slide" data-bs-ride="carousel">
+                                <div class="carousel-inner">
+                                    {% for foto in animal.foto or [] %}
+                                    <div class="carousel-item {% if loop.first %} active {% endif %}" style="aspect-ratio: 1/1; overflow: hidden;">
+                                        <img src="{{ url_for('image', image_id=foto) }}" class="d-block w-100" alt="Imagem do Animal" style="height: 100%; object-fit: cover;">
+                                    </div>
+                                    {% endfor %}
+                                    
+                                </div>
+                                <button class="carousel-control-prev" type="button" data-bs-target="#carousel-{{ animal['_id'] }}" data-bs-slide="prev">
+                                    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                                    <span class="visually-hidden">Previous</span>
+                                </button>
+                                <button class="carousel-control-next" type="button" data-bs-target="#carousel-{{ animal['_id'] }}" data-bs-slide="next">
+                                    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                                    <span class="visually-hidden">Next</span>
+                                </button>
+                            </div>
+                            <br>
+                            <p><strong>Tipo:</strong> {{ animal.tipo }}</p>
+                            <p><strong>Raça:</strong> {{ animal.raca }}</p>
+                            <p><strong>Gênero:</strong> {{ animal.genero }}</p>
+                            <p><strong>Data de Nascimento:</strong> {{ animal.data_nascimento }}</p>
+                            <p><strong>Descrição:</strong> {{ animal.descricao }}</p>
+                            <p><strong>Status:</strong> {{ animal.status }}</p>
+                        </div>
+                        <div class="modal-footer">
+                            <a href="/adotar/{{ animal['_id'] }}" class="btn btn-primary">Adotar</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            {% endfor %}
+        </ul>
+    </div>
+    
+    <!-- Link do Bootstrap -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha3/dist/js/bootstrap.bundle.min.js"></script>
+    
+    
+    <br><br><br><br><br>
 {% endblock %}
